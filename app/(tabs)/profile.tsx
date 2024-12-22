@@ -23,7 +23,7 @@ const Profile = () => (
         Login
       </Button>
 
-      <Button mode="contained" onPress={() => router.push('/(auth)/signup')}>
+      <Button mode="contained" onPress={() => router.push('/akademik-kediri')}>
         Sign Up
       </Button>
     </Surface>

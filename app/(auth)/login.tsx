@@ -7,7 +7,6 @@ import {
   TextInput,
   HelperText,
   Text,
-  Divider,
   useTheme,
 } from 'react-native-paper'
 import * as Yup from 'yup'
@@ -46,15 +45,15 @@ const Login = () => {
               height: 150,
               width: 150,
               borderRadius: 16,
-              marginBottom: 32,
+              marginBottom: 16,
               marginHorizontal: 'auto',
             }}
           />
 
-          <Text variant="headlineLarge" style={{ textAlign: 'center' }}>
+          <Text variant="headlineLarge" style={{ textAlign: 'center', fontWeight:700 }}>
             Tes Calon Mubaligh
           </Text>
-          <Text variant="bodyLarge" style={{ textAlign: 'center' }}>
+          <Text variant="bodyLarge" style={{ textAlign: 'center', marginBottom: 16 }}>
             Silahkan Masuk untuk Melanjutkan.
           </Text>
 
@@ -87,7 +86,7 @@ const Login = () => {
                   </HelperText>
                 </Surface>
 
-                <Surface elevation={0}>
+                <Surface elevation={0} style={{marginTop:-16}}>
                   <TextInput
                     maxLength={64}
                     mode="outlined"
@@ -104,13 +103,13 @@ const Login = () => {
                   </HelperText>
                 </Surface>
 
-                <Button mode="contained" onPress={() => handleSubmit()}>
+                <Button style={{marginTop:16}} mode="contained" onPress={() => handleSubmit()}>
                   Masuk
                 </Button>
               </>
             )}
           </Formik>
-          
+      
           <Button
             mode="contained-tonal"
             onPress={handlePresentModalPress}
@@ -118,16 +117,35 @@ const Login = () => {
             Gunakan Smartcard
           </Button>
           <BottomSheetModal
-            handleStyle={{borderTopLeftRadius:8, borderTopRightRadius: 8, backgroundColor:theme.colors.secondaryContainer}}
             ref={bottomSheetModalRef}
             onChange={handleSheetChanges}
             enableDismissOnClose={true}
             enablePanDownToClose={true}
             keyboardBehavior={'interactive'}
             keyboardBlurBehavior={'restore'}
+            handleStyle={{borderTopLeftRadius:16, borderTopRightRadius: 16, backgroundColor:theme.colors.elevation.level5}}
+            style={{
+              borderTopLeftRadius:16, 
+              borderTopRightRadius: 16,
+              shadowColor: "#000",
+              shadowOffset: {
+                width: 0,
+                height: 8,
+              },
+              shadowOpacity: 0.9,
+              shadowRadius: 10.32,
+
+              elevation: 16,
+            }}
           >
-            <BottomSheetView style={{flex: 1, alignItems: 'center', paddingVertical: 64, backgroundColor: theme.colors.inverseOnSurface}}>
-              <Text>Awesome 🎉</Text>
+            <BottomSheetView style={{paddingVertical: 16, backgroundColor: theme.colors.inverseOnSurface}}>
+            <Button
+            mode="contained-tonal"
+            onPress={handlePresentModalPress}
+          >
+            Gunakan Smartcard
+          </Button>
+
             </BottomSheetView>
         </BottomSheetModal>
         </Surface>

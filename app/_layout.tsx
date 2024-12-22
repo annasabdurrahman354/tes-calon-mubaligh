@@ -16,12 +16,13 @@ import { Platform, useColorScheme } from 'react-native'
 import { adaptNavigationTheme, PaperProvider } from 'react-native-paper'
 
 import { Locales, Setting, StackHeader, Themes } from '@/lib'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 // Catch any errors thrown by the Layout component.
 export { ErrorBoundary } from 'expo-router'
 
 // Ensure that reloading on `/modal` keeps a back button present.
-export const unstable_settings = { initialRouteName: '(auth)' }
+export const unstable_settings = { initialRouteName: '(tabs)' }
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()
@@ -54,8 +55,8 @@ const RootLayout = () => {
 const RootLayoutNav = () => {
   const colorScheme = useColorScheme()
   const [settings, setSettings] = React.useState<Setting>({
-    theme: 'auto',
-    color: 'default',
+    theme: 'light', // Changed default theme to 'light'
+    color: 'green',
     language: 'auto',
   })
 
@@ -72,7 +73,7 @@ const RootLayoutNav = () => {
         setSettings(JSON.parse(result ?? JSON.stringify(settings)))
       })
     } else {
-      setSettings({ ...settings, theme: colorScheme ?? 'light' })
+      setSettings({ ...settings, theme: 'light' }) // Set default to 'light' for web
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -89,9 +90,7 @@ const RootLayoutNav = () => {
   }, [])
 
   const theme =
-    Themes[
-      settings.theme === 'auto' ? (colorScheme ?? 'dark') : settings.theme
-    ][settings.color]
+    Themes[settings.theme][settings.color] // Directly use 'settings.theme'
 
   const { DarkTheme, LightTheme } = adaptNavigationTheme({
     reactNavigationDark: NavDarkTheme,
@@ -103,7 +102,7 @@ const RootLayoutNav = () => {
   return (
     <ThemeProvider
       value={
-        colorScheme === 'light'
+        settings.theme === 'light'
           ? { ...LightTheme, fonts: NavLightTheme.fonts }
           : { ...DarkTheme, fonts: NavDarkTheme.fonts }
       }
@@ -111,14 +110,18 @@ const RootLayoutNav = () => {
       <PaperProvider theme={theme}>
         <Stack
           screenOptions={{
-            animation: 'fade',
+            animation: 'slide_from_bottom',
             header: (props) => (
               <StackHeader navProps={props} children={undefined} />
             ),
           }}
         >
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen 
+            name="akademik-kediri"
+            options={{ title: 'Peserta Tes Kediri', headerShown:false }}
+          />
           <Stack.Screen
             name="search"
             options={{ title: Locales.t('search') }}

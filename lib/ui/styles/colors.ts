@@ -305,7 +305,7 @@ const Colors = {
       backdrop: 'rgba(41, 50, 48, 0.4)',
     },
     green: {
-      primary: 'rgb(16, 109, 32)',
+      primary: 'rgb(24, 146, 44)',
       onPrimary: 'rgb(255, 255, 255)',
       primaryContainer: 'rgb(157, 248, 152)',
       onPrimaryContainer: 'rgb(0, 34, 4)',
