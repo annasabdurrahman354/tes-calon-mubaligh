@@ -1,12 +1,11 @@
 import React from 'react';
-import { Avatar, Card, Chip, Divider, Searchbar, Surface, Text, TextInput, useTheme } from 'react-native-paper';
+import { Card, Chip, Divider, Searchbar, Surface, Text, TextInput, useTheme } from 'react-native-paper';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Image } from 'expo-image';
 import { Dropdown, DropdownInputProps } from 'react-native-paper-dropdown';
 import { router } from 'expo-router';
 
 const ParticipantCard = ({
-  isSelected,
   name,
   pondok,
   asalDaerah,
@@ -22,7 +21,7 @@ const ParticipantCard = ({
     <Card
       style={{
         margin: 8,
-        backgroundColor: isSelected ? theme.colors.secondaryContainer : theme.colors.background,
+        backgroundColor: theme.colors.background,
       }}
       onLongPress={onLongPress}
     >
@@ -169,7 +168,6 @@ const Search = () => {
 
   const participants = [
     {
-      isSelected: false,
       name: 'Reza Rahardian',
       pondok: 'PPM Roudlotul Jannah Surakarta',
       asalDaerah: 'Bantul Selatan',
@@ -177,10 +175,9 @@ const Search = () => {
       profileImage: require('@/assets/images/dummy-profile.png'),
       cocardNumber: 'A-12',
       testHistory: 3,
-      onLongPress: () => console.log('Participant selected'),
+      onLongPress: () => router.push('/akhlak-kediri/penilaian'),
     },
     {
-      isSelected: true,
       name: 'Muhammad Iqbal',
       pondok: 'PPM Nurul Huda',
       asalDaerah: 'Solo Utara',
@@ -188,7 +185,7 @@ const Search = () => {
       profileImage: require('@/assets/images/dummy-profile.png'),
       cocardNumber: 'B-34',
       testHistory: 0,
-      onLongPress: () => router.push('/akademik-kediri/penilaian'),
+      onLongPress: () => router.push('/akhlak-kediri/penilaian'),
     },
   ];
 
@@ -226,28 +223,6 @@ const Search = () => {
           />
         </View>
       </Surface>
-
-      {/* Selected Peserta List Chip */}
-      <View style={{marginTop: 16, marginBottom:8, flexDirection: 'row', justifyContent: 'center', gap: 16, flexWrap: 'wrap'}}>
-        <Chip 
-          icon={() => (
-            <Avatar.Image size={24} source={require('../../assets/images/dummy-profile.png')} />
-          )} 
-          onClose={() => console.log('Pressed')}>Muhammad - B12
-        </Chip>
-        <Chip 
-          icon={() => (
-            <Avatar.Image size={24} source={require('../../assets/images/dummy-profile.png')} />
-          )} 
-          onClose={() => console.log('Pressed')}>Muhammad - B12
-        </Chip>
-        <Chip 
-          icon={() => (
-            <Avatar.Image size={24} source={require('../../assets/images/dummy-profile.png')} />
-          )} 
-          onClose={() => console.log('Pressed')}>Muhammad - B12
-        </Chip>
-      </View>
 
       <ScrollView style={{ borderRadius: 24 }}>
         {participants.map((participant, index) => (

@@ -1,19 +1,18 @@
 import { Link, Stack } from 'expo-router'
 import React from 'react'
 import { Surface, Text } from 'react-native-paper'
-
-import { Locales, styles } from '@/lib'
+import { styles } from '@/lib'
 
 const NotFound = () => (
   <Surface style={styles.screen}>
-    <Stack.Screen options={{ title: Locales.t('titleNotFound') }} />
+    <Stack.Screen options={{ title: 'Halaman Tidak Ditemukan' }} />
 
-    <Text variant="displayLarge">{Locales.t('titleNotFound')}</Text>
+    <Text variant="displayLarge">Halaman Tidak Ditemukan</Text>
 
-    <Text variant="bodyLarge">{Locales.t('screen404')}</Text>
+    <Text variant="bodyLarge">404 Not Found</Text>
 
     <Link href="/">
-      <Text variant="bodyLarge">{Locales.t('goHome')}</Text>
+      <Text variant="bodyLarge">Kembali</Text>
     </Link>
   </Surface>
 )

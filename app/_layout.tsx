@@ -7,16 +7,11 @@ import {
   ThemeProvider,
 } from '@react-navigation/native'
 import { useFonts } from 'expo-font'
-import * as Localization from 'expo-localization'
 import { SplashScreen, Stack } from 'expo-router'
-import * as SecureStore from 'expo-secure-store'
 import { StatusBar } from 'expo-status-bar'
 import React from 'react'
-import { Platform, useColorScheme } from 'react-native'
 import { adaptNavigationTheme, PaperProvider } from 'react-native-paper'
-
-import { Locales, Setting, StackHeader, Themes } from '@/lib'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { Setting, StackHeader, Themes } from '@/lib'
 
 // Catch any errors thrown by the Layout component.
 export { ErrorBoundary } from 'expo-router'
@@ -53,40 +48,14 @@ const RootLayout = () => {
 }
 
 const RootLayoutNav = () => {
-  const colorScheme = useColorScheme()
   const [settings, setSettings] = React.useState<Setting>({
     theme: 'light', // Changed default theme to 'light'
     color: 'green',
-    language: 'auto',
   })
 
   // Load settings from the device
   React.useEffect(() => {
-    if (Platform.OS !== 'web') {
-      SecureStore.getItemAsync('settings').then((result) => {
-        if (result === null) {
-          SecureStore.setItemAsync('settings', JSON.stringify(settings)).then(
-            (res) => console.log(res),
-          )
-        }
-
-        setSettings(JSON.parse(result ?? JSON.stringify(settings)))
-      })
-    } else {
       setSettings({ ...settings, theme: 'light' }) // Set default to 'light' for web
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  React.useEffect(() => {
-    if (settings.language === 'auto') {
-      Locales.locale = Localization.getLocales()[0].languageCode ?? 'en'
-    } else {
-      Locales.locale = settings.language
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const theme =
@@ -95,8 +64,8 @@ const RootLayoutNav = () => {
   const { DarkTheme, LightTheme } = adaptNavigationTheme({
     reactNavigationDark: NavDarkTheme,
     reactNavigationLight: NavLightTheme,
-    materialDark: Themes.dark[settings.color],
-    materialLight: Themes.light[settings.color],
+    materialDark: Themes.dark.lime,
+    materialLight: Themes.light.lime,
   })
 
   return (
@@ -120,12 +89,13 @@ const RootLayoutNav = () => {
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           <Stack.Screen 
             name="akademik-kediri"
-            options={{ title: 'Peserta Tes Kediri', headerShown:false }}
+            options={{ title: 'Nilai Akademik Kediri', headerShown:false }}
           />
-          <Stack.Screen
-            name="search"
-            options={{ title: Locales.t('search') }}
+          <Stack.Screen 
+            name="akhlak-kediri"
+            options={{ title: 'Nilai Akhlak Kediri', headerShown:false }}
           />
+          
         </Stack>
       </PaperProvider>
 

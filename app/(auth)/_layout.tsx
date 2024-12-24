@@ -1,7 +1,5 @@
 import { Stack } from 'expo-router'
 
-import { Locales, StackHeader } from '@/lib'
-
 const Layout = () => (
   <Stack
     screenOptions={{
@@ -9,8 +7,8 @@ const Layout = () => (
       headerShown: false
     }}
   >
-    <Stack.Screen name="login" options={{ title: Locales.t('login') }} />
-    <Stack.Screen name="signup" options={{ title: Locales.t('signup') }} />
+    <Stack.Screen name="login" options={{ title: 'Login' }} />
+    <Stack.Screen name="signup" options={{ title: 'Signup' }} />
   </Stack>
 )
 

@@ -1,6 +1,5 @@
-import * as SecureStore from 'expo-secure-store'
 import React from 'react'
-import { Platform, useColorScheme } from 'react-native'
+import { useColorScheme } from 'react-native'
 import {
   Surface,
   List,
@@ -14,22 +13,18 @@ import {
 import {
   Color,
   Colors,
-  Language,
-  Languages,
   LoadingIndicator,
-  Locales,
   ScreenInfo,
   Setting,
   styles,
 } from '@/lib'
 
-const Settings = () => {
+const Profil = () => {
   const colorScheme = useColorScheme()
   const [loading, setLoading] = React.useState<boolean>(false)
   const [message, setMessage] = React.useState({ visible: false, content: '' })
   const [settings, setSettings] = React.useState<Setting>({
     color: 'default',
-    language: 'auto',
     theme: 'auto',
   })
   const [display, setDisplay] = React.useState({
@@ -40,20 +35,6 @@ const Settings = () => {
 
   React.useEffect(() => {
     setLoading(true)
-
-    if (Platform.OS !== 'web') {
-      SecureStore.getItemAsync('settings')
-        .then((result) =>
-          setSettings(JSON.parse(result ?? JSON.stringify(settings))),
-        )
-        .catch((res) =>
-          setMessage({
-            visible: true,
-            content: res.message,
-          }),
-        )
-    }
-
     setLoading(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -72,61 +53,12 @@ const Settings = () => {
           <List.AccordionGroup>
             <List.Accordion
               id="1"
-              title={Locales.t('appearance')}
+              title="Tampilan"
               left={(props) => <List.Icon {...props} icon="palette" />}
             >
               <List.Item
-                title={Locales.t('language')}
-                description={Locales.t('changeLanguage')}
-                left={(props) => <List.Icon {...props} icon="translate" />}
-                right={(props) => (
-                  <Menu
-                    visible={display.language}
-                    onDismiss={() =>
-                      setDisplay({ ...display, language: false })
-                    }
-                    anchor={
-                      <IconButton
-                        {...props}
-                        icon="pencil"
-                        onPress={() =>
-                          setDisplay({ ...display, language: true })
-                        }
-                      />
-                    }
-                  >
-                    <Menu.Item
-                      title="System"
-                      trailingIcon={
-                        settings.language === 'auto' ? 'check' : undefined
-                      }
-                      onPress={() => {
-                        setSettings({ ...settings, language: 'auto' })
-                        setDisplay({ ...display, language: false })
-                      }}
-                    />
-                    {Object.entries(Languages).map((lang) => (
-                      <Menu.Item
-                        key={lang[0]}
-                        title={`${lang[1].name} / ${lang[1].nativeName}`}
-                        trailingIcon={
-                          settings.language === lang[0] ? 'check' : undefined
-                        }
-                        onPress={() => {
-                          setSettings({
-                            ...settings,
-                            language: lang[0] as Language,
-                          })
-                          setDisplay({ ...display, language: false })
-                        }}
-                      />
-                    ))}
-                  </Menu>
-                )}
-              />
-              <List.Item
-                title={Locales.t('mode')}
-                description={Locales.t('changeMode')}
+                title="Mode"
+                description="Ubah Mode"
                 left={(props) => (
                   <List.Icon
                     {...props}
@@ -152,7 +84,7 @@ const Settings = () => {
                     }
                   >
                     <Menu.Item
-                      title={Locales.t('system')}
+                      title="Sistem"
                       leadingIcon="theme-light-dark"
                       trailingIcon={
                         settings.theme === 'auto' ? 'check' : undefined
@@ -163,7 +95,7 @@ const Settings = () => {
                       }}
                     />
                     <Menu.Item
-                      title={Locales.t('lightMode')}
+                      title="Mode Siang"
                       leadingIcon="weather-sunny"
                       trailingIcon={
                         settings.theme === 'light' ? 'check' : undefined
@@ -174,7 +106,7 @@ const Settings = () => {
                       }}
                     />
                     <Menu.Item
-                      title={Locales.t('darkMode')}
+                      title="Mode Malam"
                       leadingIcon="weather-night"
                       trailingIcon={
                         settings.theme === 'dark' ? 'check' : undefined
@@ -188,8 +120,8 @@ const Settings = () => {
                 )}
               />
               <List.Item
-                title={Locales.t('color')}
-                description={Locales.t('changeColor')}
+                title="Warna"
+                description="Ubah Warna"
                 left={(props) => (
                   <List.Icon
                     {...props}
@@ -250,7 +182,7 @@ const Settings = () => {
 
                         <Menu.Item
                           key={color}
-                          title={Locales.t(color)}
+                          title="Warna"
                           onPress={() => {
                             setSettings({
                               ...settings,
@@ -271,7 +203,7 @@ const Settings = () => {
 
       <Surface elevation={0} style={styles.screen}>
         <ScreenInfo
-          title={Locales.t('titleSettings')}
+          title="Setting"
           path="app/(tabs)/settings.tsx"
         />
       </Surface>
@@ -279,28 +211,9 @@ const Settings = () => {
       <Button
         mode="contained"
         style={{ margin: 16 }}
-        onPress={() =>
-          Platform.OS !== 'web'
-            ? SecureStore.setItemAsync('settings', JSON.stringify(settings))
-                .then(() =>
-                  setMessage({
-                    visible: true,
-                    content: Locales.t('restartApp'),
-                  }),
-                )
-                .catch((res) =>
-                  setMessage({
-                    visible: true,
-                    content: res.message,
-                  }),
-                )
-            : setMessage({
-                visible: true,
-                content: Locales.t('notAvailable'),
-              })
-        }
+        onPress={() => alert('AAA')  }
       >
-        {Locales.t('save')}
+        Simpan
       </Button>
 
       <Snackbar
@@ -314,4 +227,4 @@ const Settings = () => {
   )
 }
 
-export default Settings
+export default Profil

@@ -17,7 +17,7 @@ const Layout = () => (
     />
     <Stack.Screen 
       name="penilaian" 
-      options={{ title: "Penilaian Akademik" }}
+      options={{ title: "Penilaian Akhlak" }}
     />
   </Stack>
 )

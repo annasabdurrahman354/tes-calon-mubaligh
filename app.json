@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "expo-react-native-paper",
-    "slug": "expo-react-native-paper",
+    "name": "tes-calon-mubaligh",
+    "slug": "tes-calon-mubaligh",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -36,9 +36,18 @@
     },
     "plugins": [
       "expo-router",
-      "expo-secure-store",
       "expo-font",
-      "expo-localization"
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableProguardInReleaseBuilds": true,
+            "enableShrinkResourcesInReleaseBuilds": true,
+            "useLegacyPackaging": true,
+            "enableSeparateBuildPerCPUArchitecture": true
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
@@ -49,7 +58,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "4a71cd2c-36fd-4882-a091-ab06ac1fa131"
+        "projectId": "6944e135-a854-4923-af51-b20674b9f8d3"
       }
     }
   }
