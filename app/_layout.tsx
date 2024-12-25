@@ -7,7 +7,7 @@ import {
   ThemeProvider,
 } from '@react-navigation/native'
 import { useFonts } from 'expo-font'
-import { SplashScreen, Stack } from 'expo-router'
+import { router, SplashScreen, Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import React from 'react'
 import { adaptNavigationTheme, PaperProvider } from 'react-native-paper'
@@ -17,7 +17,7 @@ import { Setting, StackHeader, Themes } from '@/lib'
 export { ErrorBoundary } from 'expo-router'
 
 // Ensure that reloading on `/modal` keeps a back button present.
-export const unstable_settings = { initialRouteName: '(tabs)' }
+export const unstable_settings = { initialRouteName: '(auth)' }
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()
@@ -79,23 +79,15 @@ const RootLayoutNav = () => {
       <PaperProvider theme={theme}>
         <Stack
           screenOptions={{
-            animation: 'slide_from_bottom',
+            animation: 'fade',
+            headerShown: false,
             header: (props) => (
               <StackHeader navProps={props} children={undefined} />
             ),
           }}
         >
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen 
-            name="akademik-kediri"
-            options={{ title: 'Nilai Akademik Kediri', headerShown:false }}
-          />
-          <Stack.Screen 
-            name="akhlak-kediri"
-            options={{ title: 'Nilai Akhlak Kediri', headerShown:false }}
-          />
-          
+          <Stack.Screen name="(auth)" /> 
+          <Stack.Screen name="(app)" />
         </Stack>
       </PaperProvider>
 

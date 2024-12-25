@@ -231,19 +231,19 @@ const Search = () => {
       <View style={{marginTop: 16, marginBottom:8, flexDirection: 'row', justifyContent: 'center', gap: 16, flexWrap: 'wrap'}}>
         <Chip 
           icon={() => (
-            <Avatar.Image size={24} source={require('../../assets/images/dummy-profile.png')} />
+            <Avatar.Image size={24} source={require('@/assets/images/dummy-profile.png')} />
           )} 
           onClose={() => console.log('Pressed')}>Muhammad - B12
         </Chip>
         <Chip 
           icon={() => (
-            <Avatar.Image size={24} source={require('../../assets/images/dummy-profile.png')} />
+            <Avatar.Image size={24} source={require('@/assets/images/dummy-profile.png')} />
           )} 
           onClose={() => console.log('Pressed')}>Muhammad - B12
         </Chip>
         <Chip 
           icon={() => (
-            <Avatar.Image size={24} source={require('../../assets/images/dummy-profile.png')} />
+            <Avatar.Image size={24} source={require('@/assets/images/dummy-profile.png')} />
           )} 
           onClose={() => console.log('Pressed')}>Muhammad - B12
         </Chip>
