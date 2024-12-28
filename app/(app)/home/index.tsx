@@ -1,51 +1,61 @@
-import React from 'react'
-import { Card, Divider, Surface, Text, useTheme } from 'react-native-paper'
-import { useWindowDimensions, View, ScrollView } from 'react-native';
-import { Shadow } from 'react-native-shadow-2';
-import RNBounceable from '@freakycoder/react-native-bounceable';
+import React from "react";
+import { Card, Divider, Surface, Text, useTheme } from "react-native-paper";
+import { useWindowDimensions, View, ScrollView } from "react-native";
+import { Shadow } from "react-native-shadow-2";
+import RNBounceable from "@freakycoder/react-native-bounceable";
 import * as HeroIcons from "react-native-heroicons/outline";
-import { router } from 'expo-router';
-
+import { router } from "expo-router";
 
 const TabsHome = () => {
   const theme = useTheme();
-  const {height, width} = useWindowDimensions();
-  
+  const { height, width } = useWindowDimensions();
+
   return (
-    <Surface style={{ flex: 1, flexDirection: 'column'}}>
+    <Surface style={{ flex: 1, flexDirection: "column" }}>
       <ScrollView>
         <View
           style={{
-            flexDirection: 'column',
+            flexDirection: "column",
             padding: 16,
-            width: '100%',
+            width: "100%",
             gap: 16,
-          }}>
+          }}
+        >
           <View
             style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              width: '100%',
-            }}>
+              flexDirection: "row",
+              justifyContent: "space-between",
+              width: "100%",
+            }}
+          >
             <View>
-              <Text variant="bodyLarge" style={{ fontWeight: 'bold', color: theme.colors.onSecondaryContainer }}>
+              <Text
+                variant="bodyLarge"
+                style={{
+                  fontWeight: "bold",
+                  color: theme.colors.onSecondaryContainer,
+                }}
+              >
                 Periode Tes
               </Text>
-              <Text variant="titleMedium" style={{ color: theme.colors.outline }}>
+              <Text
+                variant="titleMedium"
+                style={{ color: theme.colors.outline }}
+              >
                 Januari 2024
               </Text>
             </View>
 
             <Shadow
               distance={8}
-              startColor={'#E5FCD9'}
+              startColor={"#E5FCD9"}
               style={{
                 width: 48,
                 height: 48,
                 borderRadius: 16,
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: '#3FD13F',
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "#3FD13F",
               }}
             >
               <HeroIcons.CalendarIcon color={theme.colors.onPrimary} />
@@ -54,14 +64,20 @@ const TabsHome = () => {
 
           <Divider></Divider>
 
-          <Text variant="bodyLarge" style={{ fontWeight: 'bold', color: theme.colors.onSecondaryContainer }}>
+          <Text
+            variant="bodyLarge"
+            style={{
+              fontWeight: "bold",
+              color: theme.colors.onSecondaryContainer,
+            }}
+          >
             Ringkasan
           </Text>
 
           <View
             style={{
-              flexDirection: 'row',
-              flexWrap: width < 720 ? 'wrap' : 'nowrap', // Allow the items to wrap onto a new row
+              flexDirection: "row",
+              flexWrap: width < 720 ? "wrap" : "nowrap", // Allow the items to wrap onto a new row
               gap: 16,
               paddingBottom: 16,
             }}
@@ -100,23 +116,30 @@ const TabsHome = () => {
             />
           </View>
           <View
-          style={{
+            style={{
               paddingBottom: 16,
               gap: 16,
-              flex: 1, 
-              width: '100%',
-            }}>
-            <Text variant="bodyLarge" style={{ fontWeight: 'bold', color: theme.colors.onSecondaryContainer }}>
+              flex: 1,
+              width: "100%",
+            }}
+          >
+            <Text
+              variant="bodyLarge"
+              style={{
+                fontWeight: "bold",
+                color: theme.colors.onSecondaryContainer,
+              }}
+            >
               Pengetesan Kediri
             </Text>
-            
+
             <MainMenu
               title="Nilai Penyampaian"
               cardBackgroundColor={theme.colors.background}
               icon={HeroIcons.BookOpenIcon}
               iconShadowColor="#E5FCD9"
               iconBackgroundColor="#3FD13F"
-              onClick={() => router.push('/akademik-kediri')}
+              onClick={() => router.push("/(app)/akademik-kediri")}
             />
             <MainMenu
               title="Nilai Akhlak"
@@ -124,7 +147,7 @@ const TabsHome = () => {
               icon={HeroIcons.FingerPrintIcon}
               iconShadowColor="#E5FCD9"
               iconBackgroundColor="#3FD13F"
-              onClick={() => router.push('/akhlak-kediri')}
+              onClick={() => router.push("/(app)/akhlak-kediri")}
             />
             <MainMenu
               title="Daftar Peserta Tes"
@@ -132,67 +155,81 @@ const TabsHome = () => {
               icon={HeroIcons.UserGroupIcon}
               iconShadowColor="#E5FCD9"
               iconBackgroundColor="#3FD13F"
-              onClick={() => console.log('Navigating to Daftar Peserta Tes')}
+              onClick={() => router.push("/(app)/peserta-kediri")}
             />
           </View>
 
           <View
             style={{
-                gap: 16,
-                flex: 1, 
-                width: '100%',
-              }}>
-              <Text variant="bodyLarge" style={{ fontWeight: 'bold', color: theme.colors.onSecondaryContainer }}>
-                Pengetesan Kertosono
-              </Text>
-              
-              <MainMenu
-                title="Nilai Bacaan"
-                cardBackgroundColor={theme.colors.background}
-                icon={HeroIcons.BookOpenIcon}
-                iconShadowColor="#E5FCD9"
-                iconBackgroundColor="#3FD13F"
-                onClick={() => console.log('Navigating to Nilai Bacaan')}
-              />
-              <MainMenu
-                title="Nilai Akhlak"
-                cardBackgroundColor={theme.colors.background}
-                icon={HeroIcons.FingerPrintIcon}
-                iconShadowColor="#E5FCD9"
-                iconBackgroundColor="#3FD13F"
-                onClick={() => console.log('Navigating to Nilai Akhlak')}
-              />
-              <MainMenu
-                title="Daftar Peserta Tes"
-                cardBackgroundColor={theme.colors.background}
-                icon={HeroIcons.UserGroupIcon}
-                iconShadowColor="#E5FCD9"
-                iconBackgroundColor="#3FD13F"
-                onClick={() => console.log('Navigating to Daftar Peserta Tes')}
-              />
+              gap: 16,
+              flex: 1,
+              width: "100%",
+            }}
+          >
+            <Text
+              variant="bodyLarge"
+              style={{
+                fontWeight: "bold",
+                color: theme.colors.onSecondaryContainer,
+              }}
+            >
+              Pengetesan Kertosono
+            </Text>
+
+            <MainMenu
+              title="Nilai Bacaan"
+              cardBackgroundColor={theme.colors.background}
+              icon={HeroIcons.BookOpenIcon}
+              iconShadowColor="#E5FCD9"
+              iconBackgroundColor="#3FD13F"
+              onClick={() => console.log("Navigating to Nilai Bacaan")}
+            />
+            <MainMenu
+              title="Nilai Akhlak"
+              cardBackgroundColor={theme.colors.background}
+              icon={HeroIcons.FingerPrintIcon}
+              iconShadowColor="#E5FCD9"
+              iconBackgroundColor="#3FD13F"
+              onClick={() => router.push("/(app)/akhlak-kertosono")}
+            />
+            <MainMenu
+              title="Daftar Peserta Tes"
+              cardBackgroundColor={theme.colors.background}
+              icon={HeroIcons.UserGroupIcon}
+              iconShadowColor="#E5FCD9"
+              iconBackgroundColor="#3FD13F"
+              onClick={() => router.push("/(app)/peserta-kertosono")}
+            />
           </View>
         </View>
-      </ScrollView>  
+      </ScrollView>
     </Surface>
-  )
-}
+  );
+};
 
-const StatCard = ({ title, value, cardBackgroundColor, icon: Icon, iconShadowColor, iconBackgroundColor }) => {
+const StatCard = ({
+  title,
+  value,
+  cardBackgroundColor,
+  icon: Icon,
+  iconShadowColor,
+  iconBackgroundColor,
+}) => {
   const theme = useTheme();
-  const {height, width} = useWindowDimensions();
-  
+  const { height, width } = useWindowDimensions();
+
   return (
     <View
       style={{
         flex: 1,
         borderRadius: 16,
         padding: 12,
-        flexDirection: 'column',
+        flexDirection: "column",
         gap: 4,
         backgroundColor: cardBackgroundColor,
         borderColor: theme.colors.outline,
         borderWidth: 1,
-        minWidth: width < 600 ? '45%' : '22%',
+        minWidth: width < 600 ? "45%" : "22%",
       }}
     >
       <Shadow
@@ -202,14 +239,17 @@ const StatCard = ({ title, value, cardBackgroundColor, icon: Icon, iconShadowCol
           width: 48,
           height: 48,
           borderRadius: 16,
-          justifyContent: 'center',
-          alignItems: 'center',
+          justifyContent: "center",
+          alignItems: "center",
           backgroundColor: iconBackgroundColor,
         }}
       >
         <Icon color={theme.colors.onPrimary} />
       </Shadow>
-      <Text variant="bodyLarge" style={{ fontWeight: 'bold', color: theme.colors.onSecondaryContainer }}>
+      <Text
+        variant="bodyLarge"
+        style={{ fontWeight: "bold", color: theme.colors.onSecondaryContainer }}
+      >
         {title}
       </Text>
       <Text variant="titleMedium" style={{ color: theme.colors.outline }}>
@@ -219,19 +259,25 @@ const StatCard = ({ title, value, cardBackgroundColor, icon: Icon, iconShadowCol
   );
 };
 
-
 // Reusable MainMenu Component
-const MainMenu = ({ title, icon: Icon, cardBackgroundColor, iconBackgroundColor, iconShadowColor, onClick }) => {
+const MainMenu = ({
+  title,
+  icon: Icon,
+  cardBackgroundColor,
+  iconBackgroundColor,
+  iconShadowColor,
+  onClick,
+}) => {
   const theme = useTheme();
   return (
     <RNBounceable bounceEffectIn={0.98} onPress={onClick}>
       <Card style={{ backgroundColor: cardBackgroundColor }}>
         <Card.Content
           style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            width: '100%',
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
             padding: 16,
           }}
         >
@@ -243,12 +289,15 @@ const MainMenu = ({ title, icon: Icon, cardBackgroundColor, iconBackgroundColor,
               width: 42,
               height: 42,
               borderRadius: 1000,
-              justifyContent: 'center',
-              alignItems: 'center',
+              justifyContent: "center",
+              alignItems: "center",
               backgroundColor: iconBackgroundColor,
             }}
           >
-            <Icon color={theme.colors.onPrimary} style={{ width: 28, height: 28 }} />
+            <Icon
+              color={theme.colors.onPrimary}
+              style={{ width: 28, height: 28 }}
+            />
           </Shadow>
           <Text
             style={{ color: theme.colors.primary, flex: 1 }}
@@ -267,4 +316,4 @@ const MainMenu = ({ title, icon: Icon, cardBackgroundColor, iconBackgroundColor,
   );
 };
 
-export default TabsHome
+export default TabsHome;

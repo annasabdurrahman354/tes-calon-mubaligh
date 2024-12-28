@@ -13,6 +13,6 @@ export type User = {
 };
   
 export type Session = {
-  token?: string;
-  user?: User;
+  token: string | null;
+  user: User | null;
 };

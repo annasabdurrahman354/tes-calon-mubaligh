@@ -15,30 +15,29 @@ import { Image } from "expo-image";
 import { Dropdown, DropdownInputProps } from "react-native-paper-dropdown";
 import { router, useFocusEffect } from "expo-router";
 import { useSnackbar } from "@/lib/services/useSnackbar";
-import { useKediri } from "@/lib/services/useKediri";
+import { useKertosono } from "@/lib/services/useKertosono";
 import { debounce } from "lodash";
 import { FlatList } from "react-native-gesture-handler";
-import { PesertaKediri } from "@/lib/types/Kediri";
+import { PesertaKertosono } from "@/lib/types/Kertosono";
 
 const Search = () => {
    const theme = useTheme();
     const {
-      pesertaKediri,
-      getPesertaKediri,
-      setPilihPesertaKediri,
-    } = useKediri();
-    const [queryNama, setQueryNama] = React.useState<string>("");
+      pesertaKertosono,
+      getPesertaKertosono,
+      setPilihPesertaKertosono,
+    } = useKertosono();
+    const [queryNamaOrCocard, setQueryNamaOrCocard] = React.useState<string>("");
     const [queryJenisKelamin, setQueryJenisKelamin] = React.useState<string>("-");
-    const [queryKelompok, setQueryKelompok] = React.useState<string>("-");
     const [loading, setLoading] = React.useState(true);
     const { newSnackbar } = useSnackbar();
   
     // Debounced API call
-    const fetchPesertaKediri = React.useCallback(
+    const fetchPesertaKertosono = React.useCallback(
       debounce(async () => {
         setLoading(true);
         try {
-          await getPesertaKediri(queryJenisKelamin, queryKelompok, queryNama);
+          await getPesertaKertosono(queryJenisKelamin, queryNamaOrCocard);
         } catch (error) {
           if (error instanceof Error) {
             newSnackbar(error.message);
@@ -46,24 +45,24 @@ const Search = () => {
         }
         setLoading(false);
       }, 300),
-      [queryNama, queryJenisKelamin, queryKelompok]
+      [queryNamaOrCocard, queryJenisKelamin]
     );
 
-    const selectPesertaKediri = (pesertaAkhlakKediri:  PesertaKediri) => {
-      setPilihPesertaKediri(pesertaAkhlakKediri)
-      router.push('/(app)/akhlak-kediri/penilaian')
+    const selectPesertaKertosono = (pesertaAkhlakKertosono:  PesertaKertosono) => {
+      setPilihPesertaKertosono(pesertaAkhlakKertosono)
+      router.push('/(app)/akhlak-kertosono/penilaian')
     };
   
     useEffect(() => {
-      fetchPesertaKediri();
-      return fetchPesertaKediri.cancel; // Cleanup the debounce on unmount
-    }, [queryNama, queryJenisKelamin, queryKelompok]);
+      fetchPesertaKertosono();
+      return fetchPesertaKertosono.cancel; // Cleanup the debounce on unmount
+    }, [queryNamaOrCocard, queryJenisKelamin]);
 
     useFocusEffect(
       React.useCallback(() => {
-        fetchPesertaKediri();
-        console.log(pesertaKediri?.length);
-      }, [fetchPesertaKediri])
+        fetchPesertaKertosono();
+        console.log(pesertaKertosono?.length);
+      }, [fetchPesertaKertosono])
     );
   
     const CustomDropdownInput = ({
@@ -95,36 +94,12 @@ const Search = () => {
       { label: "Perempuan", value: "Perempuan" },
     ];
   
-    const kelompokOptions = [
-      { label: "Semua Camp", value: "-" },
-      { label: "Camp A", value: "A" },
-      { label: "Camp B", value: "B" },
-      { label: "Camp C", value: "C" },
-      { label: "Camp D", value: "D" },
-      { label: "Camp E", value: "E" },
-      { label: "Camp F", value: "F" },
-      { label: "Camp G", value: "G" },
-      { label: "Camp H", value: "H" },
-      { label: "Camp I", value: "I" },
-      { label: "Camp J", value: "J" },
-      { label: "Camp K", value: "K" },
-      { label: "Camp L", value: "L" },
-      { label: "Camp M", value: "M" },
-      { label: "Camp N", value: "N" },
-      { label: "Camp O", value: "O" },
-      { label: "Camp P", value: "P" },
-      { label: "Camp Q", value: "Q" },
-      { label: "Camp R", value: "R" },
-      { label: "Camp S", value: "S" },
-      { label: "Camp T", value: "T" },
-    ];
-
   return (
     <Surface style={{ flex: 1, gap: 16, padding: 16 }}>
       <Searchbar
-        value={queryNama}
+        value={queryNamaOrCocard}
         loading={loading}
-        onChangeText={(v) => setQueryNama(v)}
+        onChangeText={(v) => setQueryNamaOrCocard(v)}
         placeholder="Cari nama peserta tes..."
       />
       <Surface style={[styles.dropdownContainer]} mode="flat">
@@ -135,18 +110,6 @@ const Search = () => {
             options={jenisKelaminOptions}
             value={queryJenisKelamin}
             onSelect={setQueryJenisKelamin}
-            hideMenuHeader={true}
-            mode="flat"
-            CustomDropdownInput={CustomDropdownInput}
-          />
-        </View>
-        <View style={styles.dropdownWrapper}>
-          <Dropdown
-            label="Kelompok"
-            placeholder="Kelompok"
-            options={kelompokOptions}
-            value={queryKelompok}
-            onSelect={setQueryKelompok}
             hideMenuHeader={true}
             mode="flat"
             CustomDropdownInput={CustomDropdownInput}
@@ -166,11 +129,11 @@ const Search = () => {
       ) : (
         <FlatList
           style={{ borderRadius: 24 }}
-          data={pesertaKediri}
+          data={pesertaKertosono}
           renderItem={({ item }) => (
             <ParticipantCard
               peserta={item}
-              onPress={() => selectPesertaKediri(item)}
+              onPress={() => selectPesertaKertosono(item)}
             />
           )}
           keyExtractor={(item) => item.id}
@@ -190,7 +153,7 @@ const ParticipantCard = ({
   peserta,
   onPress,
 }: {
-  peserta: PesertaKediri;
+  peserta: PesertaKertosono;
   onPress;
 }) => {
   const theme = useTheme();

@@ -1,20 +1,246 @@
-import React from 'react';
-import { Avatar, Card, Chip, Divider, Searchbar, Surface, Text, TextInput, useTheme } from 'react-native-paper';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { Image } from 'expo-image';
-import { Dropdown, DropdownInputProps } from 'react-native-paper-dropdown';
-import { router } from 'expo-router';
+import React, { useEffect } from "react";
+import {
+  ActivityIndicator,
+  Avatar,
+  Card,
+  Chip,
+  Divider,
+  FAB,
+  Searchbar,
+  Surface,
+  Text,
+  TextInput,
+  useTheme,
+} from "react-native-paper";
+import { StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
+import { Dropdown, DropdownInputProps } from "react-native-paper-dropdown";
+import { router, useFocusEffect } from "expo-router";
+import { useKediri } from "@/lib/services/useKediri";
+import { FlatList } from "react-native-gesture-handler";
+import { PesertaKediri } from "@/lib/types/Kediri";
+import { debounce } from "lodash";
+import { useSnackbar } from "@/lib/services/useSnackbar";
+
+const Search = () => {
+  const theme = useTheme();
+  const {
+    pesertaKediri,
+    selectedPesertaKediri,
+    clearSelectedPesertaKediri,
+    getPesertaKediri,
+    toggleSelectedPesertaKediri,
+    isSelectedPesertaKediri,
+  } = useKediri();
+  const [queryNama, setQueryNama] = React.useState<string>("");
+  const [queryJenisKelamin, setQueryJenisKelamin] = React.useState<string>("-");
+  const [queryKelompok, setQueryKelompok] = React.useState<string>("-");
+  const [loading, setLoading] = React.useState(true);
+  const { newSnackbar } = useSnackbar();
+
+  // Debounced API call
+  const fetchPesertaKediri = React.useCallback(
+    debounce(async () => {
+      setLoading(true);
+      try {
+        await getPesertaKediri(queryJenisKelamin, queryKelompok, queryNama);
+      } catch (error) {
+        if (error instanceof Error) {
+          newSnackbar(error.message);
+        }
+      }
+      setLoading(false);
+    }, 300),
+    [queryNama, queryJenisKelamin, queryKelompok]
+  );
+
+  useEffect(() => {
+    fetchPesertaKediri();
+    return fetchPesertaKediri.cancel; // Cleanup the debounce on unmount
+  }, [queryNama, queryJenisKelamin, queryKelompok]);
+
+  useEffect(() => {
+    // Run removeSelectedPesertaKediri once when the component is mounted
+    clearSelectedPesertaKediri();
+  }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchPesertaKediri();
+      console.log(pesertaKediri?.length);
+    }, [fetchPesertaKediri])
+  );
+
+  const CustomDropdownInput = ({
+    placeholder,
+    selectedLabel,
+    rightIcon,
+  }: DropdownInputProps) => (
+    <TextInput
+      mode="outlined"
+      placeholder={placeholder}
+      placeholderTextColor={theme.colors.onSurfaceVariant}
+      value={selectedLabel}
+      style={{
+        backgroundColor: theme.colors.elevation.level3,
+        borderRadius: theme.roundness * 7,
+      }}
+      textColor={theme.colors.onSurface}
+      outlineStyle={{
+        borderRadius: theme.roundness * 7,
+        borderColor: theme.colors.elevation.level3,
+      }}
+      right={rightIcon}
+    />
+  );
+
+  const jenisKelaminOptions = [
+    { label: "Laki-laki & Perempuan ", value: "-" },
+    { label: "Laki-laki", value: "Laki-laki" },
+    { label: "Perempuan", value: "Perempuan" },
+  ];
+
+  const kelompokOptions = [
+    { label: "Semua Camp", value: "-" },
+    { label: "Camp A", value: "A" },
+    { label: "Camp B", value: "B" },
+    { label: "Camp C", value: "C" },
+    { label: "Camp D", value: "D" },
+    { label: "Camp E", value: "E" },
+    { label: "Camp F", value: "F" },
+    { label: "Camp G", value: "G" },
+    { label: "Camp H", value: "H" },
+    { label: "Camp I", value: "I" },
+    { label: "Camp J", value: "J" },
+    { label: "Camp K", value: "K" },
+    { label: "Camp L", value: "L" },
+    { label: "Camp M", value: "M" },
+    { label: "Camp N", value: "N" },
+    { label: "Camp O", value: "O" },
+    { label: "Camp P", value: "P" },
+    { label: "Camp Q", value: "Q" },
+    { label: "Camp R", value: "R" },
+    { label: "Camp S", value: "S" },
+    { label: "Camp T", value: "T" },
+  ];
+
+  return (
+    <Surface style={{ flex: 1, gap: 16, padding: 16 }}>
+      <Searchbar
+        value={queryNama}
+        loading={loading}
+        onChangeText={(v) => setQueryNama(v)}
+        placeholder="Cari nama peserta tes..."
+      />
+      <Surface style={[styles.dropdownContainer]} mode="flat">
+        <View style={styles.dropdownWrapper}>
+          <Dropdown
+            label="Jenis Kelamin"
+            placeholder="Jenis Kelamin"
+            options={jenisKelaminOptions}
+            value={queryJenisKelamin}
+            onSelect={setQueryJenisKelamin}
+            hideMenuHeader={true}
+            mode="flat"
+            CustomDropdownInput={CustomDropdownInput}
+          />
+        </View>
+        <View style={styles.dropdownWrapper}>
+          <Dropdown
+            label="Kelompok"
+            placeholder="Kelompok"
+            options={kelompokOptions}
+            value={queryKelompok}
+            onSelect={setQueryKelompok}
+            hideMenuHeader={true}
+            mode="flat"
+            CustomDropdownInput={CustomDropdownInput}
+          />
+        </View>
+      </Surface>
+
+      {/* Selected Peserta List Chip */}
+      {selectedPesertaKediri?.length != 0 && (
+        <View
+          style={{
+            marginTop: 12,
+            marginBottom: 8,
+            flexDirection: "row",
+            justifyContent: "center",
+            gap: 16,
+            flexWrap: "wrap",
+          }}
+        >
+          {selectedPesertaKediri?.map((item) => (
+            <Chip
+              key={item.id}
+              icon={() => (
+                <Avatar.Image
+                  size={24}
+                  source={require("@/assets/images/dummy-profile.png")}
+                />
+              )}
+              onClose={() => toggleSelectedPesertaKediri(item)}
+            >
+              {item.nama_panggilan + " - " + item.kelompok + item.nomor_cocard}
+            </Chip>
+          ))}
+        </View>
+      )}
+      {loading ? (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <ActivityIndicator
+            style={{ marginHorizontal: 16, marginBottom: 16 }}
+            size={40}
+          />
+        </View>
+      ) : (
+        <FlatList
+          style={{ borderRadius: 24 }}
+          data={pesertaKediri}
+          renderItem={({ item }) => (
+            <ParticipantCard
+              peserta={item}
+              telahDisimak={item.telah_disimak}
+              isSelected={isSelectedPesertaKediri(item.id)}
+              onPress={() => toggleSelectedPesertaKediri(item)}
+            />
+          )}
+          keyExtractor={(item) => item.id}
+          ListEmptyComponent={
+            <Text style={{ padding: 32 }} variant="bodyLarge">
+              Tidak ada data peserta tes.
+            </Text>
+          }
+        />
+      )}
+      {/* FAB */}
+      <FAB
+        icon="pencil"
+        onPress={() => router.push("/(app)/akademik-kediri/penilaian")} // Replace with desired action
+        style={{
+          bottom: 24,
+          right: 24,
+          position: "absolute",
+        }}
+        visible={selectedPesertaKediri?.length != 0}
+      />
+    </Surface>
+  );
+};
 
 const ParticipantCard = ({
+  peserta,
+  telahDisimak,
   isSelected,
-  name,
-  pondok,
-  asalDaerah,
-  umur,
-  profileImage,
-  cocardNumber,
-  testHistory,
-  onLongPress
+  onPress,
+}: {
+  peserta: PesertaKediri;
+  telahDisimak: boolean;
+  isSelected: boolean;
+  onPress: () => void;
 }) => {
   const theme = useTheme();
 
@@ -22,14 +248,19 @@ const ParticipantCard = ({
     <Card
       style={{
         margin: 8,
-        backgroundColor: isSelected ? theme.colors.secondaryContainer : theme.colors.background,
+        backgroundColor: isSelected
+          ? theme.colors.secondaryContainer
+          : telahDisimak
+          ? theme.colors.elevation.level3
+          : theme.colors.background,
       }}
-      onLongPress={onLongPress}
+      onPress={!telahDisimak ? onPress : () => {}}
+      disabled={telahDisimak}
     >
       <Card.Content
         style={{
-          flexDirection: 'row',
-          alignItems: 'center',
+          flexDirection: "row",
+          alignItems: "center",
           gap: 12,
         }}
       >
@@ -37,24 +268,25 @@ const ParticipantCard = ({
           <Image
             style={{
               height: 96,
-              maxHeight: '100%',
+              maxHeight: "100%",
               aspectRatio: 1,
               borderColor: theme.colors.elevation.level5,
               borderWidth: 4,
               borderRadius: theme.roundness * 3,
-              alignSelf: 'center',
+              alignSelf: "center",
             }}
-            source={profileImage}
+            source={require("@/assets/images/dummy-profile.png")}
           />
           <Chip
             icon="account-group"
             style={{
-              minWidth: 'auto',
-              alignSelf: 'center',
+              minWidth: "auto",
+              alignSelf: "center",
               paddingHorizontal: 8,
             }}
           >
-            {cocardNumber}
+            {peserta.kelompok}
+            {peserta.nomor_cocard}
           </Chip>
         </View>
 
@@ -67,9 +299,12 @@ const ParticipantCard = ({
             borderRadius: theme.roundness * 2,
           }}
         >
-          <View style={{ flexDirection: 'row', gap: 4, alignItems: 'center' }}>
-            <Text variant="titleLarge">{name}</Text>
-            {testHistory > 0 && (
+          <View style={{ flexDirection: "row", gap: 4, alignItems: "center" }}>
+            <Text variant="titleMedium" style={{ fontWeight: "bold" }}>
+              {peserta.nama}
+            </Text>
+            {peserta.count_akademik_lulus + peserta.count_akademik_tidak_lulus >
+              0 && (
               <Text
                 style={{
                   paddingVertical: 1,
@@ -78,196 +313,76 @@ const ParticipantCard = ({
                   backgroundColor: theme.colors.error,
                 }}
               >
-                {testHistory}
+                {peserta.count_akademik_lulus +
+                  peserta.count_akademik_tidak_lulus}
               </Text>
             )}
           </View>
+          <Text variant="titleSmall">bin {peserta.nama_ayah}</Text>
           <Divider bold style={{ marginVertical: 1 }} />
 
           <View>
-            <Text style={{ fontWeight: 'bold', color: theme.colors.onSurface }}>Pondok:</Text>
-            <Text style={{ color: theme.colors.onSurfaceVariant }}>{pondok}</Text>
+            <Text style={{ fontWeight: "bold", color: theme.colors.onSurface }}>
+              Pondok:
+            </Text>
+            <Text style={{ color: theme.colors.onSurfaceVariant }}>
+              {peserta.asal_pondok_nama}
+            </Text>
           </View>
 
           <View>
-            <Text style={{ fontWeight: 'bold', color: theme.colors.onSurface }}>Asal Daerah:</Text>
-            <Text style={{ color: theme.colors.onSurfaceVariant }}>{asalDaerah}</Text>
+            <Text style={{ fontWeight: "bold", color: theme.colors.onSurface }}>
+              Asal Daerah:
+            </Text>
+            <Text style={{ color: theme.colors.onSurfaceVariant }}>
+              {peserta.asal_daerah_nama}
+            </Text>
           </View>
 
           <View>
-            <Text style={{ fontWeight: 'bold', color: theme.colors.onSurface }}>Umur:</Text>
-            <Text style={{ color: theme.colors.onSurfaceVariant }}>{umur}</Text>
+            <Text style={{ fontWeight: "bold", color: theme.colors.onSurface }}>
+              Umur:
+            </Text>
+            <Text style={{ color: theme.colors.onSurfaceVariant }}>
+              {peserta.umur}
+            </Text>
           </View>
+          {telahDisimak && (
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                justifyContent: "flex-start",
+              }}
+            >
+              <Chip
+                icon="check"
+                style={{
+                  minWidth: "auto",
+                  alignSelf: "center",
+                  paddingHorizontal: 8,
+                }}
+              >
+                Anda Disimak
+              </Chip>
+            </View>
+          )}
         </View>
       </Card.Content>
     </Card>
   );
 };
 
-const Search = () => {
-  const theme = useTheme();
-  const [query, setQuery] = React.useState('')
-  const [loading, setLoading] = React.useState(false)
-  const [jenisKelamin, setJenisKelamin] = React.useState<string>('Laki-laki')
-  const [kelompok, setKelompok] = React.useState<string>('A')
-
-  const CustomDropdownInput = ({
-    placeholder,
-    selectedLabel,
-    rightIcon,
-  }: DropdownInputProps) => (
-    <TextInput
-      mode="outlined"
-      placeholder={placeholder}
-      placeholderTextColor={theme.colors.onSurfaceVariant}
-      value={selectedLabel}
-      style={{ backgroundColor: theme.colors.elevation.level3, borderRadius: theme.roundness * 7,}}
-      textColor={theme.colors.onSurface}
-      outlineStyle={{borderRadius: theme.roundness * 7, borderColor: theme.colors.elevation.level3}}
-      right={rightIcon}
-    />
-  )
-
-  const jenisKelaminOptions = [
-    { label: 'Laki-laki', value: 'Laki-laki' },
-    { label: 'Perempuan', value: 'Perempuan' },
-  ];
-
-  const kelompokOptions = [
-    { label: 'Camp A', value: 'A' },
-    { label: 'Camp B', value: 'B' },
-    { label: 'Camp C', value: 'C' },
-    { label: 'Camp D', value: 'D' },
-    { label: 'Camp E', value: 'E' },
-    { label: 'Camp F', value: 'F' },
-    { label: 'Camp G', value: 'G' },
-    { label: 'Camp H', value: 'H' },
-    { label: 'Camp I', value: 'I' },
-    { label: 'Camp J', value: 'J' },
-    { label: 'Camp K', value: 'K' },
-    { label: 'Camp L', value: 'L' },
-    { label: 'Camp M', value: 'M' },
-    { label: 'Camp N', value: 'N' },
-    { label: 'Camp O', value: 'O' },
-    { label: 'Camp P', value: 'P' },
-    { label: 'Camp Q', value: 'Q' },
-    { label: 'Camp R', value: 'R' },
-    { label: 'Camp S', value: 'S' },
-    { label: 'Camp T', value: 'T' },
-  ];
-
-  // Search logic
-  React.useEffect(() => {
-    if (query !== '') {
-      setLoading(true)
-    }
-
-    setTimeout(() => {
-      setLoading(false)
-    }, 1000)
-  }, [query])
-
-  const participants = [
-    {
-      isSelected: false,
-      name: 'Reza Rahardian',
-      pondok: 'PPM Roudlotul Jannah Surakarta',
-      asalDaerah: 'Bantul Selatan',
-      umur: 21,
-      profileImage: require('@/assets/images/dummy-profile.png'),
-      cocardNumber: 'A-12',
-      testHistory: 3,
-      onLongPress: () => console.log('Participant selected'),
-    },
-    {
-      isSelected: true,
-      name: 'Muhammad Iqbal',
-      pondok: 'PPM Nurul Huda',
-      asalDaerah: 'Solo Utara',
-      umur: 22,
-      profileImage: require('@/assets/images/dummy-profile.png'),
-      cocardNumber: 'B-34',
-      testHistory: 0,
-      onLongPress: () => router.push('/akademik-kediri/penilaian'),
-    },
-  ];
-
-  return (
-    <Surface style={{ flex: 1, gap: 16, padding: 16 }}>
-      <Searchbar
-        value={query}
-        loading={loading}
-        onChangeText={(v) => setQuery(v)}
-        placeholder="Cari nama peserta tes..."
-      />
-      <Surface style={[styles.dropdownContainer]} mode="flat">
-        <View style={styles.dropdownWrapper}>
-          <Dropdown
-            label="Jenis Kelamin"
-            placeholder="Jenis Kelamin"
-            options={jenisKelaminOptions}
-            value={jenisKelamin}
-            onSelect={setJenisKelamin}
-            hideMenuHeader={true}
-            mode="flat"
-            CustomDropdownInput={CustomDropdownInput}
-          />
-        </View>
-        <View style={styles.dropdownWrapper}>
-          <Dropdown
-            label="Kelompok"
-            placeholder="Kelompok"
-            options={kelompokOptions}
-            value={kelompok}
-            onSelect={setKelompok}
-            hideMenuHeader={true}
-            mode="flat"
-            CustomDropdownInput={CustomDropdownInput}
-          />
-        </View>
-      </Surface>
-
-      {/* Selected Peserta List Chip */}
-      <View style={{marginTop: 16, marginBottom:8, flexDirection: 'row', justifyContent: 'center', gap: 16, flexWrap: 'wrap'}}>
-        <Chip 
-          icon={() => (
-            <Avatar.Image size={24} source={require('@/assets/images/dummy-profile.png')} />
-          )} 
-          onClose={() => console.log('Pressed')}>Muhammad - B12
-        </Chip>
-        <Chip 
-          icon={() => (
-            <Avatar.Image size={24} source={require('@/assets/images/dummy-profile.png')} />
-          )} 
-          onClose={() => console.log('Pressed')}>Muhammad - B12
-        </Chip>
-        <Chip 
-          icon={() => (
-            <Avatar.Image size={24} source={require('@/assets/images/dummy-profile.png')} />
-          )} 
-          onClose={() => console.log('Pressed')}>Muhammad - B12
-        </Chip>
-      </View>
-
-      <ScrollView style={{ borderRadius: 24 }}>
-        {participants.map((participant, index) => (
-          <ParticipantCard key={index} {...participant} />
-        ))}
-      </ScrollView>
-    </Surface>
-  );
-};
-
 const styles = StyleSheet.create({
   dropdownContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap', // Allows items to wrap to the next line
+    flexDirection: "row",
+    flexWrap: "wrap", // Allows items to wrap to the next line
     gap: 16,
-    width: '100%',
+    width: "100%",
   },
   dropdownWrapper: {
     flex: 1, // Ensures dropdowns share space equally
-    minWidth: '20%', // Ensures dropdowns have a minimum width
+    minWidth: "20%", // Ensures dropdowns have a minimum width
   },
 });
 

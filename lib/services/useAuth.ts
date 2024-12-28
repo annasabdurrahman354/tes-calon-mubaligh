@@ -1,8 +1,9 @@
-import axios from 'axios';
-import { atom, useAtom, useAtomValue } from 'jotai';
+import { isAxiosError } from 'axios';
+import { useAtom, useAtomValue } from 'jotai';
 import { sessionAtom } from '../atoms/authAtom';
 import { Session } from '../types/Auth';
-import { BASE_URL } from '../constants/endpoint';
+import api, { removeAuthToken, setAuthToken } from './api';
+import { RESET } from 'jotai/utils';
 
 export function useAuth() {
   const [session, setSession] = useAtom(sessionAtom);
@@ -12,39 +13,95 @@ export function useAuth() {
 
   const loginCredential = async (username: string, password: string): Promise<Session | null> => {
     try {
-      const response = await axios.post(BASE_URL + 'login/credential', {
+      const response = await api.post('login-credential', {
         username,
         password,
       });
 
-      const { token, user } = response.data;
-      const sessionData: Session = { token, user };
+      const sessionData: Session = { token: response.data.token, user: response.data.user };
 
       setSession(sessionData);
+      setAuthToken(response.data.token);
 
       return sessionData;
 
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        // Handle Axios-specific error
-        const message = err.response?.data?.message || 'Username atau password tidak valid!';
-        console.error(message);
-        throw new Error(message);
-      } else if (err instanceof Error) {
-        // Handle other types of errors
-        console.error(err.message);
-        throw err;
-      } else {
-        // Handle unexpected error types
-        console.error('Terjadi kesalahan', err);
-        throw new Error('Terjadi kesalahan!');
+      if (isAxiosError(err)) {
+        if (err.response && err.response.status === 401) {
+          // Handle 401 Unauthorized error from the server
+          const message = err.response.data?.message;
+          console.error('Login failed:', message);
+          throw new Error(message);
+        } else if (err.code === 'ERR_NETWORK') {
+          // Handle Network Error
+          console.error('Network error:', err.message);
+          throw new Error('Tidak dapat terhubung ke server. Periksa koneksi Anda.');
+        }
       }
+      console.error('Unexpected error:', err);
+      throw new Error('Terjadi kesalahan yang tidak diketahui!');
     }
   };
 
-  const logout = () => {
-    setSession(null);
+  const loginNfc = async (nfc: string): Promise<Session | null> => {
+    try {
+      const response = await api.post('login-nfc', {
+        nfc,
+      });
+
+      const sessionData: Session = { token: response.data.token, user: response.data.user };
+
+      setSession(sessionData);
+      setAuthToken(response.data.token);
+
+      return sessionData;
+
+    } catch (err) {
+      if (isAxiosError(err)) {
+        if (err.response && err.response.status === 401) {
+          // Handle 401 Unauthorized error from the server
+          const message = err.response.data?.message;
+          console.error('Login failed:', message);
+          throw new Error(message);
+        } else if (err.code === 'ERR_NETWORK') {
+          // Handle Network Error
+          console.error('Network error:', err.message);
+          throw new Error('Tidak dapat terhubung ke server. Periksa koneksi Anda.');
+        }
+      }
+      console.error('Unexpected error:', err);
+      throw new Error('Terjadi kesalahan yang tidak diketahui!');
+    }
   };
 
-  return { loginCredential, logout, user, token };
+  const loadToken = () =>{
+    setAuthToken(token);
+  }
+
+  const logout = async () => {
+    try {
+      const response = await api.post('logout');
+      //setSession(RESET);
+      setSession(null)
+      removeAuthToken();
+      return response.data.message;
+    } catch (err) {
+      if (isAxiosError(err)) {
+        if (err.response && err.response.status) {
+          // Handle 401 Unauthorized error from the server
+          const message = err.response.data?.message;
+          console.error('Logout failed:', message);
+          throw new Error(message);
+        } else if (err.code === 'ERR_NETWORK') {
+          // Handle Network Error
+          console.error('Network error:', err.message);
+          throw new Error('Tidak dapat terhubung ke server. Periksa koneksi Anda.');
+        }
+      }
+      console.error('Unexpected error:', err);
+      throw new Error('Terjadi kesalahan yang tidak diketahui!');
+    }
+  };
+
+  return { loginCredential, loginNfc, logout,loadToken, user, token};
 }

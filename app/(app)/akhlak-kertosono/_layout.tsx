@@ -11,7 +11,7 @@ const Layout = () => (
         header: (props) => <StackHeader navProps={props} children={undefined} />,
       }}
     >
-      <Stack.Screen name="index" options={{ title: "Peserta Kediri" }} />
+      <Stack.Screen name="index" options={{ title: "Peserta Kertosono" }} />
       <Stack.Screen name="penilaian" options={{ title: "Penilaian Akhlak" }} />
     </Stack>
   </GestureHandlerRootView>

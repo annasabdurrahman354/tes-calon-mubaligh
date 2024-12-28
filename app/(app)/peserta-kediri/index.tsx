@@ -49,9 +49,9 @@ const Search = () => {
       [queryNama, queryJenisKelamin, queryKelompok]
     );
 
-    const selectPesertaKediri = (pesertaAkhlakKediri:  PesertaKediri) => {
-      setPilihPesertaKediri(pesertaAkhlakKediri)
-      router.push('/(app)/akhlak-kediri/penilaian')
+    const selectPesertaKediri = (peserta:  PesertaKediri) => {
+      setPilihPesertaKediri(peserta)
+      router.push('/(app)/peserta-kediri/detail')
     };
   
     useEffect(() => {

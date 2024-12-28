@@ -1,9 +1,11 @@
-import { router } from 'expo-router'
-import React from 'react'
-import { Button, Surface } from 'react-native-paper'
-import { ScreenInfo, styles } from '@/lib'
+import { router } from "expo-router";
+import React from "react";
+import { Button, Surface } from "react-native-paper";
+import { ScreenInfo, styles } from "@/lib";
+import { useAuth } from "@/lib/services/useAuth";
 
 const Rekap = () => {
+  const { logout } = useAuth();
   return (
     <Surface style={styles.screen}>
       <ScreenInfo title="Profile" path="app/(tabs)/rekap.tsx" />
@@ -13,22 +15,18 @@ const Rekap = () => {
         style={{
           padding: 16,
           gap: 16,
-          position: 'absolute',
+          position: "absolute",
           left: 0,
           right: 0,
           bottom: 0,
         }}
       >
-        <Button mode="contained" onPress={() => router.push('/(auth)/login')}>
-          Login
-        </Button>
-
-        <Button mode="contained" onPress={() => router.push('/akademik-kediri')}>
-          Sign Up
+        <Button mode="contained" onPress={() => logout()}>
+          Logout
         </Button>
       </Surface>
     </Surface>
-  )
-}
+  );
+};
 
-export default Rekap
+export default Rekap;

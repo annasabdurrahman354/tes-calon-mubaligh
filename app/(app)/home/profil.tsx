@@ -1,5 +1,5 @@
-import React from 'react'
-import { useColorScheme } from 'react-native'
+import React from "react";
+import { useColorScheme } from "react-native";
 import {
   Surface,
   List,
@@ -8,7 +8,7 @@ import {
   IconButton,
   Snackbar,
   Icon,
-} from 'react-native-paper'
+} from "react-native-paper";
 
 import {
   Color,
@@ -17,32 +17,30 @@ import {
   ScreenInfo,
   Setting,
   styles,
-} from '@/lib'
+} from "@/lib";
 
 const Profil = () => {
-  const colorScheme = useColorScheme()
-  const [loading, setLoading] = React.useState<boolean>(false)
-  const [message, setMessage] = React.useState({ visible: false, content: '' })
+  const colorScheme = useColorScheme();
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [message, setMessage] = React.useState({ visible: false, content: "" });
   const [settings, setSettings] = React.useState<Setting>({
-    color: 'default',
-    theme: 'auto',
-  })
+    color: "default",
+    theme: "auto",
+  });
   const [display, setDisplay] = React.useState({
     color: false,
     language: false,
     theme: false,
-  })
+  });
 
   React.useEffect(() => {
-    setLoading(true)
-    setLoading(false)
+    setLoading(true);
+    setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
   const themeColors =
-    Colors[
-      settings.theme === 'auto' ? (colorScheme ?? 'light') : settings.theme
-    ]
+    Colors[settings.theme === "auto" ? colorScheme ?? "light" : settings.theme];
 
   return (
     <Surface style={{ flex: 1 }}>
@@ -63,11 +61,11 @@ const Profil = () => {
                   <List.Icon
                     {...props}
                     icon={
-                      settings.theme === 'auto'
-                        ? 'theme-light-dark'
-                        : settings.theme === 'light'
-                          ? 'weather-sunny'
-                          : 'weather-night'
+                      settings.theme === "auto"
+                        ? "theme-light-dark"
+                        : settings.theme === "light"
+                        ? "weather-sunny"
+                        : "weather-night"
                     }
                   />
                 )}
@@ -87,33 +85,33 @@ const Profil = () => {
                       title="Sistem"
                       leadingIcon="theme-light-dark"
                       trailingIcon={
-                        settings.theme === 'auto' ? 'check' : undefined
+                        settings.theme === "auto" ? "check" : undefined
                       }
                       onPress={() => {
-                        setSettings({ ...settings, theme: 'auto' })
-                        setDisplay({ ...display, theme: false })
+                        setSettings({ ...settings, theme: "auto" });
+                        setDisplay({ ...display, theme: false });
                       }}
                     />
                     <Menu.Item
                       title="Mode Siang"
                       leadingIcon="weather-sunny"
                       trailingIcon={
-                        settings.theme === 'light' ? 'check' : undefined
+                        settings.theme === "light" ? "check" : undefined
                       }
                       onPress={() => {
-                        setSettings({ ...settings, theme: 'light' })
-                        setDisplay({ ...display, theme: false })
+                        setSettings({ ...settings, theme: "light" });
+                        setDisplay({ ...display, theme: false });
                       }}
                     />
                     <Menu.Item
                       title="Mode Malam"
                       leadingIcon="weather-night"
                       trailingIcon={
-                        settings.theme === 'dark' ? 'check' : undefined
+                        settings.theme === "dark" ? "check" : undefined
                       }
                       onPress={() => {
-                        setSettings({ ...settings, theme: 'dark' })
-                        setDisplay({ ...display, theme: false })
+                        setSettings({ ...settings, theme: "dark" });
+                        setDisplay({ ...display, theme: false });
                       }}
                     />
                   </Menu>
@@ -128,8 +126,8 @@ const Profil = () => {
                     icon="palette-swatch-variant"
                     color={
                       Colors[
-                        settings.theme === 'auto'
-                          ? (colorScheme ?? 'light')
+                        settings.theme === "auto"
+                          ? colorScheme ?? "light"
                           : settings.theme
                       ][settings.color]?.primary
                     }
@@ -152,9 +150,9 @@ const Profil = () => {
                         key={color}
                         elevation={0}
                         style={{
-                          width: '100%',
-                          flexDirection: 'row',
-                          alignItems: 'center',
+                          width: "100%",
+                          flexDirection: "row",
+                          alignItems: "center",
                         }}
                       >
                         <Surface
@@ -187,8 +185,8 @@ const Profil = () => {
                             setSettings({
                               ...settings,
                               color: color as Color,
-                            })
-                            setDisplay({ ...display, color: false })
+                            });
+                            setDisplay({ ...display, color: false });
                           }}
                         />
                       </Surface>
@@ -202,16 +200,13 @@ const Profil = () => {
       )}
 
       <Surface elevation={0} style={styles.screen}>
-        <ScreenInfo
-          title="Setting"
-          path="app/(tabs)/settings.tsx"
-        />
+        <ScreenInfo title="Setting" path="app/(tabs)/settings.tsx" />
       </Surface>
 
       <Button
         mode="contained"
         style={{ margin: 16 }}
-        onPress={() => alert('AAA')  }
+        onPress={() => alert("AAA")}
       >
         Simpan
       </Button>
@@ -224,7 +219,7 @@ const Profil = () => {
         {message.content}
       </Snackbar>
     </Surface>
-  )
-}
+  );
+};
 
-export default Profil
+export default Profil;
