@@ -17,7 +17,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Platform, TouchableOpacity, View } from "react-native";
 import {CreditCardIcon} from "react-native-heroicons/outline";
-import { useKediri } from "@/lib/services/useKediri";
+import { useKertosono } from "@/lib/services/useKertosono";
 
 const Layout = () => {
   const theme = useTheme();
@@ -29,16 +29,16 @@ const Layout = () => {
   const inputRef = useRef(null);
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
-  const { getPesertaKediriByNfc, addSelectedPesertaKediri } = useKediri();
+  const { getPesertaKertosonoByNfc, addSelectedPesertaKertosono } = useKertosono();
 
-  const onGetPesertaKediriByNfc = async (nfc: string) => {
+  const onGetPesertaKertosonoByNfc = async (nfc: string) => {
     setLoading(true);
     if (nfcId.length != 10) {
       console.log("Rejecy NFC ID:", nfcId); // Debugging: Log the NFC ID before processing
       return null
     }
     try {
-      const peserta = await getPesertaKediriByNfc(nfc);
+      const peserta = await getPesertaKertosonoByNfc(nfc);
 
       console.log(peserta)
 
@@ -46,7 +46,7 @@ const Layout = () => {
         setSmartCardMessage(`${peserta.nama} sudah pernah anda simak.`);
       } else {
         setSmartCardMessage(`${peserta?.nama} telah ditambahkan.`);
-        addSelectedPesertaKediri(peserta);
+        addSelectedPesertaKertosono(peserta);
         setNfcId("");
         inputRef.current?.focus();
       }
@@ -71,10 +71,10 @@ const Layout = () => {
     if (loading) setNfcId("");
     if (nfcId.length === 10) {
       console.log("Auto-trigger NFC ID:", nfcId); // Debugging: Log the NFC ID before processing
-      onGetPesertaKediriByNfc(nfcId.trim());
+      onGetPesertaKertosonoByNfc(nfcId.trim());
     }
-  }, [nfcId, onGetPesertaKediriByNfc]);
-  
+  }, [nfcId, onGetPesertaKertosonoByNfc]);
+
   const handleScreenTouch = () => {
     // Maintain focus on the TextInput even after screen interaction
     if (inputRef.current) {
@@ -96,7 +96,7 @@ const Layout = () => {
     if (inputRef.current) inputRef.current.focus();
   }, []);
 
-  const snapPoints = useMemo(() => ["30%"], []);
+  const snapPoints = useMemo(() => ["40%"], []);
 
   const renderBackdrop = useCallback(
     (props) => <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />,
@@ -115,7 +115,7 @@ const Layout = () => {
           <Stack.Screen
             name="index"
             options={{
-              title: "Peserta Kediri",
+              title: "Peserta Kertosono",
               headerRight: () => (
                 <Button
                   style={{ marginRight: 8 }}

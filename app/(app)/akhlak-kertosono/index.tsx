@@ -100,7 +100,7 @@ const Search = () => {
         value={queryNamaOrCocard}
         loading={loading}
         onChangeText={(v) => setQueryNamaOrCocard(v)}
-        placeholder="Cari nama peserta tes..."
+        placeholder="Cari nama atau nomor cocard peserta tes..."
       />
       <Surface style={[styles.dropdownContainer]} mode="flat">
         <View style={styles.dropdownWrapper}>

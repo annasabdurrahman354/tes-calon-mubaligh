@@ -11,7 +11,10 @@ export type AkademikKertosono = {
   guru_id: string;
   guru_nama: string;
   penilaian: string;
-  kekurangan: string[];
+  kekurangan_tajwid: string[];
+  kekurangan_khusus: string[];
+  kekurangan_keserasian: string[];
+  kekurangan_kelancaran: string[];
   catatan: string | null;
 }
 
@@ -24,7 +27,10 @@ export type AkhlakKertosonoForm = {
 export type AkademikKertosonoForm = {
   peserta_kertosono_id: string;
   penilaian: string;
-  kekurangan: string[] | null;
+  kekurangan_tajwid: string[];
+  kekurangan_khusus: string[];
+  kekurangan_keserasian: string[];
+  kekurangan_kelancaran: string[];
   catatan: string | null;
 }
 

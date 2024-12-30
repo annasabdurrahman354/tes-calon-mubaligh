@@ -1,9 +1,8 @@
 import { useAtom } from "jotai";
 import { AkademikKediriForm, AkhlakKediriForm, PesertaKediri } from "../types/Kediri";
-import api from "./api";
+import api, { handleApiError } from "./api";
 import { pilihPesertaKediriAtom, selectedPesertaKediriAtom } from "../atoms/selectedPesertaAtom";
 import { pesertaKediriAtom } from "../atoms/pesertaAtom";
-import { isAxiosError } from "axios";
 
 export function useKediri() {
     const [pesertaKediri, setPesertaKediri] = useAtom(pesertaKediriAtom);
@@ -14,9 +13,8 @@ export function useKediri() {
       jenis_kelamin?: string,
       kelompok?: string,
       nama?: string
-    ): Promise<PesertaKediri[] | null> => {
+    ): Promise<PesertaKediri[] | null | any> => {
       try {
-        // Construct query parameters based on provided arguments
         const params: Record<string, string> = {};
     
         if (jenis_kelamin && jenis_kelamin !== '-') {
@@ -29,62 +27,25 @@ export function useKediri() {
           params['filter[siswa.nama]'] = nama;
         }
     
-        // Make the API request with the constructed params
         const response = await api.get('peserta-kediri', { params });
-    
-        // Assuming response.data contains the peserta Kediri data
         setPesertaKediri(response.data);
-    
-        return response.data; // Return the response data, assuming it's the list of PesertaKediri
-    
+        return response.data;
       } catch (err) {
-        if (isAxiosError(err)) {
-          if (err.response && err.response.status) {
-            // Handle 401 Unauthorized error from the server
-            const message = err.response.data?.message || 'Terjadi kesalahan. Coba ulangi lagi!';
-            console.error('Fetch Failed:', message);
-            throw new Error(message);
-          } else if (err.code === 'ERR_NETWORK') {
-            // Handle Network Error
-            console.error('Network error:', err.message);
-            throw new Error('Tidak dapat terhubung ke server. Periksa koneksi Anda.');
-          }
-        }
-        console.error('Unexpected error:', err);
-        throw new Error('Terjadi kesalahan yang tidak diketahui!');
-      }
-    };    
-
-    const getPesertaKediriByNfc = async (
-      nfc: string,
-    ): Promise<PesertaKediri | null> => {
-      try {
-        // Make the API request with the constructed query string
-        const response = await api.get('peserta-kediri/getByNfc', {
-          params: {
-            nfc: nfc
-          }
-        });        
-       
-        return response.data.data;
-      } catch (err) {
-        if (isAxiosError(err)) {
-          if (err.response && err.response.status) {
-            // Handle 401 Unauthorized error from the server
-            const message = err.response.data?.message || 'Terjadi kesalahan. Coba ulangi lagi!';
-            console.error('Fetch Failed:', message);
-            throw new Error(message);
-          } else if (err.code === 'ERR_NETWORK') {
-            // Handle Network Error
-            console.error('Network error:', err.message);
-            throw new Error('Tidak dapat terhubung ke server. Periksa koneksi Anda.');
-          }
-        }
-        console.error('Unexpected error:', err);
-        throw new Error('Terjadi kesalahan yang tidak diketahui!');
+        handleApiError(err);
       }
     };
-
+    
+    const getPesertaKediriByNfc = async (nfc: string): Promise<PesertaKediri | null | any> => {
+      try {
+        const response = await api.get('peserta-kediri/getByNfc', {
+          params: { 'nfc': nfc },
+        });
+        return response.data.data;
+      } catch (err) {
+        handleApiError(err);
+      }
+    };
+    
     const storeAkademikKediri = async (
       peserta_kediri_id: string,
       nilai_makna: string,
@@ -92,9 +53,8 @@ export function useKediri() {
       nilai_penjelasan: string,
       nilai_pemahaman: string,
       catatan: string
-    ): Promise<AkademikKediriForm> => {
+    ): Promise<AkademikKediriForm | null | any> => {
       try {
-        // Make the API request with the constructed payload
         const response = await api.post<AkademikKediriForm>('akademik-kediri', {
           peserta_kediri_id,
           nilai_makna,
@@ -103,59 +63,28 @@ export function useKediri() {
           nilai_pemahaman,
           catatan,
         });
-
-        console.log( response.data)
-        return response.data; // Return the response data directly
+        console.log(response.data);
+        return response.data;
       } catch (err) {
-        if (isAxiosError(err)) {
-          if (err.response && err.response.status) {
-            // Handle server response error
-            const message = err.response.data?.message || 'Terjadi kesalahan. Coba ulangi lagi!';
-            console.error('Store Failed:', message, err.response.data || err.message);
-            throw new Error(message);
-          } else if (err.code === 'ERR_NETWORK') {
-            // Handle network-related errors
-            console.error('Network error:', err.message);
-            throw new Error('Tidak dapat terhubung ke server. Periksa koneksi Anda.');
-          }
-        }
-        // Log unexpected errors
-        console.error('Unexpected error:', err);
-        throw new Error('Terjadi kesalahan yang tidak diketahui!');
+        handleApiError(err);
       }
-    };    
-
+    };
+    
     const storeAkhlakKediri = async (
       peserta_kediri_id: string,
       poin: number,
-      catatan: string,
-    ): Promise<AkhlakKediriForm> => {
+      catatan: string
+    ): Promise<AkhlakKediriForm | null | any> => {
       try {
-        // Make the API request with the constructed payload
         const response = await api.post<AkhlakKediriForm>('akhlak-kediri', {
           peserta_kediri_id,
           poin,
           catatan,
         });
-        
-        console.log( response.data)
-        return response.data; // Return the response data
+        console.log(response.data);
+        return response.data;
       } catch (err) {
-        if (isAxiosError(err)) {
-          if (err.response && err.response.status) {
-            // Handle server error with a custom message
-            const message = err.response.data?.message || 'Terjadi kesalahan. Coba ulangi lagi!';
-            console.error('Store Failed:', message, err.response.data || err.message);
-            throw new Error(message);
-          } else if (err.code === 'ERR_NETWORK') {
-            // Handle network errors
-            console.error('Network error:', err.message);
-            throw new Error('Tidak dapat terhubung ke server. Periksa koneksi Anda.');
-          }
-        }
-        // Handle unexpected errors
-        console.error('Unexpected error:', err);
-        throw new Error('Terjadi kesalahan yang tidak diketahui!');
+        handleApiError(err);
       }
     };
 

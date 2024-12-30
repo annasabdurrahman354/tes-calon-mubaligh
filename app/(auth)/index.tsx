@@ -8,7 +8,6 @@ import {
   HelperText,
   Text,
   useTheme,
-  Snackbar,
   ActivityIndicator,
 } from "react-native-paper";
 import * as Yup from "yup";
@@ -18,12 +17,11 @@ import * as HeroIconsOutline from "react-native-heroicons/outline";
 import { router } from "expo-router";
 import { useAuth } from "@/lib/services/useAuth";
 import { useSnackbar } from "@/lib/services/useSnackbar";
-import { GestureHandlerRootView, TouchableWithoutFeedback } from "react-native-gesture-handler";
 
 const Login = () => {
-  const { loginCredential, loginNfc } = useAuth();
   const theme = useTheme();
   const [loading, setLoading] = useState(false);
+  const { loginCredential, loginNfc } = useAuth();
   const { newSnackbar } = useSnackbar();
 
   const inputRef = useRef(null);

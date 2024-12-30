@@ -11,12 +11,14 @@ import { Surface, Text, useTheme } from "react-native-paper";
 import { Platform, View } from "react-native";
 import { Image } from "expo-image";
 import { useAuth } from "@/lib/services/useAuth";
+import { useStatistik } from "@/lib/services/useStatistik";
 
 const TabLayout = () => {
   const { user } = useAuth();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const isMobile = Platform.OS !== "web";
+  const { getStatistikKediri, getStatistikKertosono } = useStatistik();
 
   return (
     <SafeAreaProvider>

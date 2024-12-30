@@ -6,7 +6,6 @@ import {
   Card,
   Chip,
   IconButton,
-  RadioButton,
   Surface,
   Text,
   TextInput,
@@ -19,7 +18,7 @@ import RNBounceable from "@freakycoder/react-native-bounceable";
 import { Formik } from "formik";
 import { SegmentedButtons } from "react-native-paper";
 import { DataTable } from "react-native-paper";
-import { useKediri } from "@/lib/services/useKediri";
+import { useKertosono } from "@/lib/services/useKertosono";
 import { router } from "expo-router";
 import { useSnackbar } from "@/lib/services/useSnackbar";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
@@ -40,21 +39,21 @@ const Penilaian = () => {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
   const {
-    storeAkademikKediri,
-    selectedPesertaKediri,
-    removeSelectedPesertaKediri,
-    getPesertaKediriByNfc,
-    addSelectedPesertaKediri
-  } = useKediri();
+    storeAkademikKertosono,
+    selectedPesertaKertosono,
+    removeSelectedPesertaKertosono,
+    getPesertaKertosonoByNfc,
+    addSelectedPesertaKertosono
+  } = useKertosono();
 
-  const onGetPesertaKediriByNfc = async (nfc: string) => {
+  const onGetPesertaKertosonoByNfc = async (nfc: string) => {
     setLoading(true);
     if (nfcId.length != 10) {
       console.log("Rejecy NFC ID:", nfcId); // Debugging: Log the NFC ID before processing
       return null
     }
     try {
-      const peserta = await getPesertaKediriByNfc(nfc);
+      const peserta = await getPesertaKertosonoByNfc(nfc);
 
       console.log(peserta)
 
@@ -62,7 +61,7 @@ const Penilaian = () => {
         setSmartCardMessage(`${peserta.nama} sudah pernah anda simak.`);
       } else {
         setSmartCardMessage(`${peserta?.nama} telah ditambahkan.`);
-        addSelectedPesertaKediri(peserta);
+        addSelectedPesertaKertosono(peserta);
         setNfcId("");
         inputRef.current?.focus();
       }
@@ -76,35 +75,36 @@ const Penilaian = () => {
     inputRef.current?.focus(); // Refocus the input field
   };
 
-  // Synchronize formValues with selectedPesertaKediri
+  // Synchronize formValues with selectedPesertaKertosono
   useEffect(() => {
-    const updatedFormValues = selectedPesertaKediri.map((peserta) => {
+    const updatedFormValues = selectedPesertaKertosono.map((peserta) => {
       const existingForm = formValues.find(
-        (form) => form.peserta_kediri_id === peserta.id
+        (form) => form.peserta_kertosono_id === peserta.id
       );
       return (
         existingForm || {
-          peserta_kediri_id: peserta.id,
-          nilaiMakna: "",
-          nilaiKeterangan: "",
-          nilaiPenjelasan: "",
-          nilaiPemahaman: "",
+          peserta_kertosono_id: peserta.id,
+          penilaian: "",
+          kekurangan_tajwid: [],
+          kekurangan_khusus: [],
+          kekurangan_keserasian: [],
+          kekurangan_kelancaran: [],
           catatan: "",
         }
       );
     });
     setFormValues(updatedFormValues);
-  }, [selectedPesertaKediri]);
+  }, [selectedPesertaKertosono]);
 
   const handleRemovePeserta = (indexToRemove) => {
-    const pesertaToRemove = selectedPesertaKediri[indexToRemove];
-    if (selectedPesertaKediri.length == 1) {
+    const pesertaToRemove = selectedPesertaKertosono[indexToRemove];
+    if (selectedPesertaKertosono.length == 1) {
       router.back();
-    } else if (activePenilaian == selectedPesertaKediri.length - 1) {
+    } else if (activePenilaian == selectedPesertaKertosono.length - 1) {
       setActivePenilaian(activePenilaian - 1);
     }
 
-    removeSelectedPesertaKediri(pesertaToRemove);
+    removeSelectedPesertaKertosono(pesertaToRemove);
   };
 
   // Focus input field when the modal is presented and `useSmartcard` is true
@@ -118,10 +118,10 @@ const Penilaian = () => {
     if (loading) setNfcId("");
     if (nfcId.length === 10) {
       console.log("Auto-trigger NFC ID:", nfcId); // Debugging: Log the NFC ID before processing
-      onGetPesertaKediriByNfc(nfcId.trim());
+      onGetPesertaKertosonoByNfc(nfcId.trim());
     }
-  }, [nfcId, onGetPesertaKediriByNfc]);
-  
+  }, [nfcId, onGetPesertaKertosonoByNfc]);
+
   const handleScreenTouch = () => {
     // Maintain focus on the TextInput even after screen interaction
     if (inputRef.current) {
@@ -164,7 +164,7 @@ const Penilaian = () => {
           backgroundColor: theme.colors.elevation.level2,
         }}
       >
-        {selectedPesertaKediri.map((peserta, index) => (
+        {selectedPesertaKertosono.map((peserta, index) => (
           <RNBounceable
             key={index}
             bounceEffectIn={0.7}
@@ -231,10 +231,10 @@ const Penilaian = () => {
                     fontWeight: "bold",
                   }}
                 >
-                  {selectedPesertaKediri[activePenilaian].nama}
+                  {selectedPesertaKertosono[activePenilaian].nama}
                 </Text>
                 <Text variant="titleSmall">
-                  bin {selectedPesertaKediri[activePenilaian].nama_ayah}
+                  bin {selectedPesertaKertosono[activePenilaian].nama_ayah}
                 </Text>
               </View>
             </View>
@@ -253,27 +253,27 @@ const Penilaian = () => {
                 )}
                 style={{ backgroundColor: theme.colors.elevation.level3 }}
               >
-                {selectedPesertaKediri[activePenilaian].asal_pondok_nama}
+                {selectedPesertaKertosono[activePenilaian].asal_pondok_nama}
               </Chip>
               {/* Chip asal daerah peserta tes */}
               <Chip
                 icon="map-marker"
                 style={{ backgroundColor: theme.colors.elevation.level3 }}
               >
-                {selectedPesertaKediri[activePenilaian].asal_daerah_nama}
+                {selectedPesertaKertosono[activePenilaian].asal_daerah_nama}
               </Chip>
               {/* Chip pendidikan terakhir terdiri dari Jenjang Pendidikan - Jurusan */}
               <Chip
                 icon="school"
                 style={{ backgroundColor: theme.colors.elevation.level3 }}
               >
-                {selectedPesertaKediri[activePenilaian].pendidikan}
+                {selectedPesertaKertosono[activePenilaian].pendidikan}
               </Chip>
               <Chip
                 icon="calendar"
                 style={{ backgroundColor: theme.colors.elevation.level3 }}
               >
-                {selectedPesertaKediri[activePenilaian].umur} tahun
+                {selectedPesertaKertosono[activePenilaian].umur} tahun
               </Chip>
             </View>
           </Card.Content>
@@ -296,12 +296,12 @@ const Penilaian = () => {
           ]}
         />
         {tab === "penilaian" ? (
-          <FormPenilaianAkademikKediri
+          <FormPenilaianAkademikKertosono
             loading={loading}
             setLoading={setLoading}
             activePenilaian={activePenilaian}
             formValues={formValues}
-            storeAkademikKediri={storeAkademikKediri}
+            storeAkademikKertosono={storeAkademikKertosono}
             setFormValues={setFormValues}
             removePeserta={handleRemovePeserta}
           />
@@ -315,17 +315,17 @@ const Penilaian = () => {
               <DataTable>
                 <DataTable.Header>
                   <DataTable.Title>Dewan Guru</DataTable.Title>
-                  <DataTable.Title>Nilai Rata-Rata</DataTable.Title>
+                  <DataTable.Title>Penilaian</DataTable.Title>
+                  <DataTable.Title>Kekurangan</DataTable.Title>
                   <DataTable.Title>Catatan Penguji</DataTable.Title>
-                  <DataTable.Title>Status</DataTable.Title>
                 </DataTable.Header>
 
-                {selectedPesertaKediri[activePenilaian].akademik.map((item) => (
+                {selectedPesertaKertosono[activePenilaian].akademik.map((item) => (
                   <DataTable.Row key={item.id}>
                     <DataTable.Cell>{item.guru_nama}</DataTable.Cell>
-                    <DataTable.Cell>{item.rata_rata}</DataTable.Cell>
+                    <DataTable.Cell>{item.penilaian}</DataTable.Cell>
+                    <DataTable.Cell>{[item.kekurangan_tajwid, item.kekurangan_khusus, item.kekurangan_keserasian, item.kekurangan_kelancaran].flat(1).join(', ')}</DataTable.Cell>
                     <DataTable.Cell>{item.catatan}</DataTable.Cell>
-                    <DataTable.Cell>{item.status_lulus}</DataTable.Cell>
                   </DataTable.Row>
                 ))}
               </DataTable>
@@ -419,23 +419,45 @@ const Penilaian = () => {
   );
 };
 
-// Define validation schema using Yup
 const validationSchema = Yup.object().shape({
-  nilaiMakna: Yup.string().required("Nilai makna harus dipilih."),
-  nilaiKeterangan: Yup.string().required("Nilai keterangan harus dipilih."),
-  nilaiPenjelasan: Yup.string().required("Nilai penjelasan harus dipilih."),
-  nilaiPemahaman: Yup.string().required("Nilai pemahaman harus dipilih."),
-  catatanPenguji: Yup.string(), // Optional field
+  penilaian: Yup.string().required("Penilaian harus dipilih."),
+  kekurangan: Yup.string().test(
+    "kekurangan-not-empty",
+    "Setidaknya satu kekurangan harus dipilih jika penilaian Tidak Lulus.",
+    function (_, context) {
+      const {
+        penilaian,
+        kekurangan_tajwid,
+        kekurangan_khusus,
+        kekurangan_keserasian,
+        kekurangan_kelancaran,
+      } = context.parent;
+
+      if (penilaian === "Tidak Lulus") {
+        const allKekuranganEmpty =
+          (!kekurangan_tajwid || kekurangan_tajwid.length === 0) &&
+          (!kekurangan_khusus || kekurangan_khusus.length === 0) &&
+          (!kekurangan_keserasian || kekurangan_keserasian.length === 0) &&
+          (!kekurangan_kelancaran || kekurangan_kelancaran.length === 0);
+
+        if (allKekuranganEmpty) {
+          return false; // Trigger validation error
+        }
+      }
+
+      return true; // Validation passes
+    }
+  ),
 });
 
-const FormPenilaianAkademikKediri = ({
+const FormPenilaianAkademikKertosono = ({
   loading,
   setLoading,
   activePenilaian,
   formValues,
   setFormValues,
   removePeserta,
-  storeAkademikKediri,
+  storeAkademikKertosono,
 }) => {
   const theme = useTheme();
   const activeFormValues = formValues[activePenilaian] || {};
@@ -451,12 +473,13 @@ const FormPenilaianAkademikKediri = ({
           // Call the API to store the form data
           setLoading(true);
           const formValueToStore = formValues[activePenilaian];
-          const storedForm = await storeAkademikKediri(
-            formValueToStore.peserta_kediri_id,
-            formValueToStore.nilaiMakna,
-            formValueToStore.nilaiKeterangan,
-            formValueToStore.nilaiPenjelasan,
-            formValueToStore.nilaiPemahaman,
+          const storedForm = await storeAkademikKertosono(
+            formValueToStore.peserta_kertosono_id,
+            formValueToStore.penilaian,
+            formValueToStore.kekurangan_tajwid,
+            formValueToStore.kekurangan_khusus,
+            formValueToStore.kekurangan_keserasian,
+            formValueToStore.kekurangan_kelancaran,
             formValueToStore.catatan
           );
 
@@ -500,201 +523,186 @@ const FormPenilaianAkademikKediri = ({
               </Text>
             </View>
 
-            {/* Nilai Makna Radio Buttons */}
             <View style={styles.inputGroup}>
-              <Text variant="titleSmall">Nilai Makna</Text>
-              <RadioButton.Group
-                value={values.nilaiMakna}
+              <Text variant="titleSmall">Penilaian</Text>
+              <SegmentedButtons
+                value={values.penilaian}
                 onValueChange={(value) => {
-                  setFieldValue("nilaiMakna", value);
+                  setFieldValue("penilaian", value);
                   setFormValues((prevValues) => {
                     const updatedValues = [...prevValues];
                     updatedValues[activePenilaian] = {
                       ...updatedValues[activePenilaian],
-                      nilaiMakna: value,
+                      penilaian: value,
                     };
                     return updatedValues;
                   });
                 }}
-              >
-                <View style={styles.radioGroup}>
-                  <RadioButton.Item
-                    position="leading"
-                    label="60"
-                    value="60"
-                    disabled={loading}
-                  />
-                  <RadioButton.Item
-                    position="leading"
-                    label="70"
-                    value="70"
-                    disabled={loading}
-                  />
-                  <RadioButton.Item
-                    position="leading"
-                    label="80"
-                    value="80"
-                    disabled={loading}
-                  />
-                  <RadioButton.Item
-                    position="leading"
-                    label="90"
-                    value="90"
-                    disabled={loading}
-                  />
-                </View>
-              </RadioButton.Group>
-              {errors.nilaiMakna && touched.nilaiMakna && (
-                <Text style={styles.errorText}>{errors.nilaiMakna}</Text>
+                buttons={[
+                  {
+                    value: 'Lulus',
+                    label: 'Lulus',
+                    showSelectedCheck: true
+                  },
+                  {
+                    value: 'Tidak Lulus',
+                    label: 'Tidak Lulus',
+                    showSelectedCheck: true
+                  },
+                ]}
+              />
+              {errors.penilaian && touched.penilaian && (
+                <Text style={styles.errorText}>{errors.penilaian}</Text>
               )}
             </View>
 
-            {/* Nilai Keterangan Radio Buttons */}
-            <View style={styles.inputGroup}>
-              <Text variant="titleSmall">Nilai Keterangan</Text>
-              <RadioButton.Group
-                value={values.nilaiKeterangan}
-                onValueChange={(value) => {
-                  setFieldValue("nilaiKeterangan", value);
-                  setFormValues((prevValues) => {
-                    const updatedValues = [...prevValues];
-                    updatedValues[activePenilaian] = {
-                      ...updatedValues[activePenilaian],
-                      nilaiKeterangan: value,
-                    };
-                    return updatedValues;
-                  });
-                }}
-              >
-                <View style={styles.radioGroup}>
-                  <RadioButton.Item
-                    position="leading"
-                    label="60"
-                    value="60"
-                    disabled={loading}
-                  />
-                  <RadioButton.Item
-                    position="leading"
-                    label="70"
-                    value="70"
-                    disabled={loading}
-                  />
-                  <RadioButton.Item
-                    position="leading"
-                    label="80"
-                    value="80"
-                    disabled={loading}
-                  />
-                  <RadioButton.Item
-                    position="leading"
-                    label="90"
-                    value="90"
-                    disabled={loading}
-                  />
-                </View>
-              </RadioButton.Group>
-              {errors.nilaiKeterangan && touched.nilaiKeterangan && (
-                <Text style={styles.errorText}>{errors.nilaiKeterangan}</Text>
-              )}
-            </View>
-
-            {/* Nilai Penjelasan Radio Buttons */}
-            <View style={styles.inputGroup}>
-              <Text variant="titleSmall">Nilai Penjelasan</Text>
-              <RadioButton.Group
-                value={values.nilaiPenjelasan}
-                onValueChange={(value) => {
-                  setFieldValue("nilaiPenjelasan", value);
-                  setFormValues((prevValues) => {
-                    const updatedValues = [...prevValues];
-                    updatedValues[activePenilaian] = {
-                      ...updatedValues[activePenilaian],
-                      nilaiPenjelasan: value,
-                    };
-                    return updatedValues;
-                  });
-                }}
-              >
-                <View style={styles.radioGroup}>
-                  <RadioButton.Item
-                    position="leading"
-                    label="60"
-                    value="60"
-                    disabled={loading}
-                  />
-                  <RadioButton.Item
-                    position="leading"
-                    label="70"
-                    value="70"
-                    disabled={loading}
-                  />
-                  <RadioButton.Item
-                    position="leading"
-                    label="80"
-                    value="80"
-                    disabled={loading}
-                  />
-                  <RadioButton.Item
-                    position="leading"
-                    label="90"
-                    value="90"
-                    disabled={loading}
+            {values.penilaian === "Tidak Lulus" && (
+              <View>
+                <View style={styles.inputGroup}>
+                  <Text variant="titleSmall">Kekurangan Tajwid</Text>
+                  <SegmentedButtons
+                    value={values.kekurangan_tajwid}
+                    multiSelect
+                    onValueChange={(value) => {
+                      setFieldValue("kekurangan_tajwid", value);
+                      setFormValues((prevValues) => {
+                        const updatedValues = [...prevValues];
+                        updatedValues[activePenilaian] = {
+                          ...updatedValues[activePenilaian],
+                          kekurangan_tajwid: value,
+                        };
+                        return updatedValues;
+                      });
+                    }}
+                    buttons={[
+                      {
+                        value: 'Dengung',
+                        label: 'Dengung',
+                        showSelectedCheck: true
+                      },
+                      {
+                        value: 'Mad',
+                        label: 'Mad',
+                        showSelectedCheck: true
+                      },
+                      {
+                        value: 'Makhraj',
+                        label: 'Makhraj',
+                        showSelectedCheck: true
+                      },
+                      {
+                        value: 'Tafkjim-Tarqiq',
+                        label: 'Tafkjim-Tarqiq',
+                        showSelectedCheck: true
+                      },
+                    ]}
                   />
                 </View>
-              </RadioButton.Group>
-              {errors.nilaiPenjelasan && touched.nilaiPenjelasan && (
-                <Text style={styles.errorText}>{errors.nilaiPenjelasan}</Text>
-              )}
-            </View>
-
-            {/* Nilai Pemahaman Radio Buttons */}
-            <View style={styles.inputGroup}>
-              <Text variant="titleSmall">Nilai Pemahaman</Text>
-              <RadioButton.Group
-                value={values.nilaiPemahaman}
-                onValueChange={(value) => {
-                  setFieldValue("nilaiPemahaman", value);
-                  setFormValues((prevValues) => {
-                    const updatedValues = [...prevValues];
-                    updatedValues[activePenilaian] = {
-                      ...updatedValues[activePenilaian],
-                      nilaiPemahaman: value,
-                    };
-                    return updatedValues;
-                  });
-                }}
-              >
-                <View style={styles.radioGroup}>
-                  <RadioButton.Item
-                    position="leading"
-                    label="60"
-                    value="60"
-                    disabled={loading}
-                  />
-                  <RadioButton.Item
-                    position="leading"
-                    label="70"
-                    value="70"
-                    disabled={loading}
-                  />
-                  <RadioButton.Item
-                    position="leading"
-                    label="80"
-                    value="80"
-                    disabled={loading}
-                  />
-                  <RadioButton.Item
-                    position="leading"
-                    label="90"
-                    value="90"
-                    disabled={loading}
+                <View style={styles.inputGroup}>
+                  <Text variant="titleSmall">Kekurangan Khusus</Text>
+                  <SegmentedButtons
+                    value={values.kekurangan_khusus}
+                    multiSelect
+                    onValueChange={(value) => {
+                      setFieldValue("kekurangan_khusus", value);
+                      setFormValues((prevValues) => {
+                        const updatedValues = [...prevValues];
+                        updatedValues[activePenilaian] = {
+                          ...updatedValues[activePenilaian],
+                          kekurangan_khusus: value,
+                        };
+                        return updatedValues;
+                      });
+                    }}
+                    buttons={[
+                      {
+                        value: 'Harakat',
+                        label: 'Harakat',
+                        showSelectedCheck: true
+                      },
+                      {
+                        value: 'Lafadz',
+                        label: 'Lafadz',
+                        showSelectedCheck: true
+                      },
+                      {
+                        value: 'Lam Jalalah',
+                        label: 'Lam Jalalah',
+                        showSelectedCheck: true
+                      },
+                    ]}
                   />
                 </View>
-              </RadioButton.Group>
-              {errors.nilaiPemahaman && touched.nilaiPemahaman && (
-                <Text style={styles.errorText}>{errors.nilaiPemahaman}</Text>
-              )}
-            </View>
+                <View style={styles.inputGroup}>
+                  <Text variant="titleSmall">Kekurangan Keserasian</Text>
+                  <SegmentedButtons
+                    value={values.kekurangan_keserasian}
+                    multiSelect
+                    onValueChange={(value) => {
+                      setFieldValue("kekurangan_keserasian", value);
+                      setFormValues((prevValues) => {
+                        const updatedValues = [...prevValues];
+                        updatedValues[activePenilaian] = {
+                          ...updatedValues[activePenilaian],
+                          kekurangan_keserasian: value,
+                        };
+                        return updatedValues;
+                      });
+                    }}
+                    buttons={[
+                      {
+                        value: 'Panjang Pendek',
+                        label: 'Panjang Pendek',
+                        showSelectedCheck: true
+                      },
+                      {
+                        value: 'Ikhtilash Huruf Sukun',
+                        label: 'Ikhtilash Huruf Sukun',
+                        showSelectedCheck: true
+                      },
+                      {
+                        value: 'Ikhtilash Huruf Syiddah',
+                        label: 'Ikhtilash Huruf Syiddah',
+                        showSelectedCheck: true
+                      },
+                    ]}
+                  />
+                </View>
+                <View style={styles.inputGroup}>
+                  <Text variant="titleSmall">Kekurangan Kelancaran</Text>
+                  <SegmentedButtons
+                    value={values.kekurangan_kelancaran}
+                    multiSelect
+                    onValueChange={(value) => {
+                      setFieldValue("kekurangan_kelancaran", value);
+                      setFormValues((prevValues) => {
+                        const updatedValues = [...prevValues];
+                        updatedValues[activePenilaian] = {
+                          ...updatedValues[activePenilaian],
+                          kekurangan_kelancaran: value,
+                        };
+                        return updatedValues;
+                      });
+                    }}
+                    buttons={[
+                      {
+                        value: 'Kecepatan',
+                        label: 'Kecepatan',
+                        showSelectedCheck: true
+                      },
+                      {
+                        value: 'Ketartilan',
+                        label: 'Ketartilan',
+                        showSelectedCheck: true
+                      },
+                    ]}
+                  />
+                  {errors.kekurangan && (
+                     <Text style={styles.errorText}>{errors.kekurangan}</Text>
+                  )}
+                </View>
+              </View> 
+            )}
 
             {/* Catatan Penguji TextInput */}
             <TextInput
@@ -769,15 +777,10 @@ const styles = StyleSheet.create({
   },
 
   inputGroup: {
-    marginBottom: 8,
-  },
-  radioGroup: {
-    flexDirection: "row", // This makes the radio buttons appear horizontally
-    flexWrap: "nowrap", // Allows wrapping if there are many options
-    justifyContent: "flex-start",
+    marginBottom: 16,
+    gap:8
   },
   errorText: {
-    marginTop: -2,
     fontSize: 12,
     color: "red",
   },

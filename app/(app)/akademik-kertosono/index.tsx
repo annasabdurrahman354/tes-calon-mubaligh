@@ -1,9 +1,11 @@
 import React, { useEffect } from "react";
 import {
   ActivityIndicator,
+  Avatar,
   Card,
   Chip,
   Divider,
+  FAB,
   Searchbar,
   Surface,
   Text,
@@ -14,86 +16,89 @@ import { StyleSheet, View } from "react-native";
 import { Image } from "expo-image";
 import { Dropdown, DropdownInputProps } from "react-native-paper-dropdown";
 import { router, useFocusEffect } from "expo-router";
-import { useSnackbar } from "@/lib/services/useSnackbar";
 import { useKertosono } from "@/lib/services/useKertosono";
-import { debounce } from "lodash";
 import { FlatList } from "react-native-gesture-handler";
 import { PesertaKertosono } from "@/lib/types/Kertosono";
+import { debounce } from "lodash";
+import { useSnackbar } from "@/lib/services/useSnackbar";
 
 const Search = () => {
-   const theme = useTheme();
-    const {
-      pesertaKertosono,
-      getPesertaKertosono,
-      setPilihPesertaKertosono,
-    } = useKertosono();
-    const [queryNamaOrCocard, setQueryNamaOrCocard] = React.useState<string>("");
-    const [queryJenisKelamin, setQueryJenisKelamin] = React.useState<string>("-");
-    const [loading, setLoading] = React.useState(true);
-    const { newSnackbar } = useSnackbar();
-  
-    // Debounced API call
-    const fetchPesertaKertosono = React.useCallback(
-      debounce(async () => {
-        setLoading(true);
-        try {
-          await getPesertaKertosono(queryJenisKelamin, queryNamaOrCocard);
-        } catch (error) {
-          if (error instanceof Error) {
-            newSnackbar(error.message);
-          }
+  const theme = useTheme();
+  const {
+    pesertaKertosono,
+    selectedPesertaKertosono,
+    clearSelectedPesertaKertosono,
+    getPesertaKertosono,
+    toggleSelectedPesertaKertosono,
+    isSelectedPesertaKertosono,
+  } = useKertosono();
+  const [queryNamaOrCocard, setQueryNamaOrCocard] = React.useState<string>("");
+  const [queryJenisKelamin, setQueryJenisKelamin] = React.useState<string>("-");
+  const [loading, setLoading] = React.useState(true);
+  const { newSnackbar } = useSnackbar();
+
+  // Debounced API call
+  const fetchPesertaKertosono = React.useCallback(
+    debounce(async () => {
+      setLoading(true);
+      try {
+        await getPesertaKertosono(queryJenisKelamin, queryNamaOrCocard);
+      } catch (error) {
+        if (error instanceof Error) {
+          newSnackbar(error.message);
         }
-        setLoading(false);
-      }, 300),
-      [queryNamaOrCocard, queryJenisKelamin]
-    );
+      }
+      setLoading(false);
+    }, 300),
+    [queryNamaOrCocard, queryJenisKelamin]
+  );
 
-    const selectPesertaKertosono = (peserta:  PesertaKertosono) => {
-      setPilihPesertaKertosono(peserta)
-      router.push('/(app)/peserta-kertosono/detail')
-    };
-  
-    useEffect(() => {
+  useEffect(() => {
+    fetchPesertaKertosono();
+    return fetchPesertaKertosono.cancel; // Cleanup the debounce on unmount
+  }, [queryNamaOrCocard, queryJenisKelamin]);
+
+  useEffect(() => {
+    // Run removeSelectedPesertaKertosono once when the component is mounted
+    clearSelectedPesertaKertosono();
+  }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
       fetchPesertaKertosono();
-      return fetchPesertaKertosono.cancel; // Cleanup the debounce on unmount
-    }, [queryNamaOrCocard, queryJenisKelamin]);
+      console.log(pesertaKertosono?.length);
+    }, [fetchPesertaKertosono])
+  );
 
-    useFocusEffect(
-      React.useCallback(() => {
-        fetchPesertaKertosono();
-        console.log(pesertaKertosono?.length);
-      }, [fetchPesertaKertosono])
-    );
-  
-    const CustomDropdownInput = ({
-      placeholder,
-      selectedLabel,
-      rightIcon,
-    }: DropdownInputProps) => (
-      <TextInput
-        mode="outlined"
-        placeholder={placeholder}
-        placeholderTextColor={theme.colors.onSurfaceVariant}
-        value={selectedLabel}
-        style={{
-          backgroundColor: theme.colors.elevation.level3,
-          borderRadius: theme.roundness * 7,
-        }}
-        textColor={theme.colors.onSurface}
-        outlineStyle={{
-          borderRadius: theme.roundness * 7,
-          borderColor: theme.colors.elevation.level3,
-        }}
-        right={rightIcon}
-      />
-    );
-  
-    const jenisKelaminOptions = [
-      { label: "Laki-laki & Perempuan ", value: "-" },
-      { label: "Laki-laki", value: "Laki-laki" },
-      { label: "Perempuan", value: "Perempuan" },
-    ];
-  
+  const CustomDropdownInput = ({
+    placeholder,
+    selectedLabel,
+    rightIcon,
+  }: DropdownInputProps) => (
+    <TextInput
+      mode="outlined"
+      placeholder={placeholder}
+      placeholderTextColor={theme.colors.onSurfaceVariant}
+      value={selectedLabel}
+      style={{
+        backgroundColor: theme.colors.elevation.level3,
+        borderRadius: theme.roundness * 7,
+      }}
+      textColor={theme.colors.onSurface}
+      outlineStyle={{
+        borderRadius: theme.roundness * 7,
+        borderColor: theme.colors.elevation.level3,
+      }}
+      right={rightIcon}
+    />
+  );
+
+  const jenisKelaminOptions = [
+    { label: "Laki-laki & Perempuan ", value: "-" },
+    { label: "Laki-laki", value: "Laki-laki" },
+    { label: "Perempuan", value: "Perempuan" },
+  ];
+
   return (
     <Surface style={{ flex: 1, gap: 16, padding: 16 }}>
       <Searchbar
@@ -117,6 +122,34 @@ const Search = () => {
         </View>
       </Surface>
 
+      {/* Selected Peserta List Chip */}
+      {selectedPesertaKertosono?.length != 0 && (
+        <View
+          style={{
+            marginTop: 12,
+            marginBottom: 8,
+            flexDirection: "row",
+            justifyContent: "center",
+            gap: 16,
+            flexWrap: "wrap",
+          }}
+        >
+          {selectedPesertaKertosono?.map((item) => (
+            <Chip
+              key={item.id}
+              icon={() => (
+                <Avatar.Image
+                  size={24}
+                  source={require("@/assets/images/dummy-profile.png")}
+                />
+              )}
+              onClose={() => toggleSelectedPesertaKertosono(item)}
+            >
+              {item.nama_panggilan + " - " + item.nomor_cocard}
+            </Chip>
+          ))}
+        </View>
+      )}
       {loading ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
@@ -133,7 +166,9 @@ const Search = () => {
           renderItem={({ item }) => (
             <ParticipantCard
               peserta={item}
-              onPress={() => selectPesertaKertosono(item)}
+              telahDisimak={item.telah_disimak}
+              isSelected={isSelectedPesertaKertosono(item.id)}
+              onPress={() => toggleSelectedPesertaKertosono(item)}
             />
           )}
           keyExtractor={(item) => item.id}
@@ -144,17 +179,31 @@ const Search = () => {
           }
         />
       )}
+      {/* FAB */}
+      <FAB
+        icon="pencil"
+        onPress={() => router.push("/(app)/akademik-kertosono/penilaian")} // Replace with desired action
+        style={{
+          bottom: 24,
+          right: 24,
+          position: "absolute",
+        }}
+        visible={selectedPesertaKertosono?.length != 0}
+      />
     </Surface>
   );
 };
 
-
 const ParticipantCard = ({
   peserta,
+  telahDisimak,
+  isSelected,
   onPress,
 }: {
   peserta: PesertaKertosono;
-  onPress;
+  telahDisimak: boolean;
+  isSelected: boolean;
+  onPress: () => void;
 }) => {
   const theme = useTheme();
 
@@ -162,9 +211,14 @@ const ParticipantCard = ({
     <Card
       style={{
         margin: 8,
-        backgroundColor: theme.colors.background,
+        backgroundColor: isSelected
+          ? theme.colors.secondaryContainer
+          : telahDisimak
+          ? theme.colors.elevation.level3
+          : theme.colors.background,
       }}
-      onPress={onPress}
+      onPress={!telahDisimak ? onPress : () => {}}
+      disabled={telahDisimak}
     >
       <Card.Content
         style={{
@@ -194,7 +248,6 @@ const ParticipantCard = ({
               paddingHorizontal: 8,
             }}
           >
-            {peserta.kelompok}
             {peserta.nomor_cocard}
           </Chip>
         </View>
@@ -256,6 +309,26 @@ const ParticipantCard = ({
               {peserta.umur}
             </Text>
           </View>
+          {telahDisimak && (
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                justifyContent: "flex-start",
+              }}
+            >
+              <Chip
+                icon="check"
+                style={{
+                  minWidth: "auto",
+                  alignSelf: "center",
+                  paddingHorizontal: 8,
+                }}
+              >
+                Telah Disimak
+              </Chip>
+            </View>
+          )}
         </View>
       </Card.Content>
     </Card>

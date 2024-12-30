@@ -182,7 +182,7 @@ const TabsHome = () => {
               icon={HeroIcons.BookOpenIcon}
               iconShadowColor="#E5FCD9"
               iconBackgroundColor="#3FD13F"
-              onClick={() => console.log("Navigating to Nilai Bacaan")}
+              onClick={() => router.push("/(app)/akademik-kertosono")}
             />
             <MainMenu
               title="Nilai Akhlak"

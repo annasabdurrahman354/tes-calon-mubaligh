@@ -363,7 +363,7 @@ const ParticipantCard = ({
                   paddingHorizontal: 8,
                 }}
               >
-                Anda Disimak
+                Telah Disimak
               </Chip>
             </View>
           )}

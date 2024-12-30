@@ -1,9 +1,8 @@
 import { useAtom } from "jotai";
 import { AkademikKertosonoForm, AkhlakKertosonoForm, PesertaKertosono } from "../types/Kertosono";
-import api from "./api";
+import api, { handleApiError } from "./api";
 import { pilihPesertaKertosonoAtom, selectedPesertaKertosonoAtom } from "../atoms/selectedPesertaAtom";
 import { pesertaKertosonoAtom } from "../atoms/pesertaAtom";
-import { isAxiosError } from "axios";
 
 export function useKertosono() {
     const [pesertaKertosono, setPesertaKertosono] = useAtom(pesertaKertosonoAtom);
@@ -13,9 +12,8 @@ export function useKertosono() {
     const getPesertaKertosono = async (
       jenis_kelamin?: string,
       namaOrCocard?: string
-    ): Promise<PesertaKertosono[] | null> => {
+    ): Promise<PesertaKertosono[] | null | any> => {
       try {
-        // Construct query parameters based on provided arguments
         const params: Record<string, string> = {};
     
         if (jenis_kelamin && jenis_kelamin !== '-') {
@@ -25,130 +23,63 @@ export function useKertosono() {
           params['filter[namaOrCocard]'] = namaOrCocard;
         }
     
-        // Make the API request with the constructed params
         const response = await api.get('peserta-kertosono', { params });
-    
-        // Assuming response.data contains the peserta Kertosono data
         setPesertaKertosono(response.data);
-        console.log(response.data);
     
-        return response.data; // Return the response data, assuming it's the list of PesertaKertosono
-    
+        return response.data;
       } catch (err) {
-        if (isAxiosError(err)) {
-          if (err.response && err.response.status) {
-            // Handle 401 Unauthorized error from the server
-            const message = err.response.data?.message || 'Terjadi kesalahan. Coba ulangi lagi!';
-            console.error('Fetch Failed:', message);
-            throw new Error(message);
-          } else if (err.code === 'ERR_NETWORK') {
-            // Handle Network Error
-            console.error('Network error:', err.message);
-            throw new Error('Tidak dapat terhubung ke server. Periksa koneksi Anda.');
-          }
-        }
-        console.error('Unexpected error:', err);
-        throw new Error('Terjadi kesalahan yang tidak diketahui!');
-      }
-    };    
-
-    const getPesertaKertosonoByNfc = async (
-      nfc: string,
-    ): Promise<PesertaKertosono | null> => {
-      try {
-        // Make the API request with the constructed query string
-        const response = await api.get('peserta-kertosono/getByNfc', {
-          params: {
-            nfc: nfc
-          }
-        });        
-       
-        return response.data.data;
-      } catch (err) {
-        if (isAxiosError(err)) {
-          if (err.response && err.response.status) {
-            // Handle 401 Unauthorized error from the server
-            const message = err.response.data?.message || 'Terjadi kesalahan. Coba ulangi lagi!';
-            console.error('Fetch Failed:', message);
-            throw new Error(message);
-          } else if (err.code === 'ERR_NETWORK') {
-            // Handle Network Error
-            console.error('Network error:', err.message);
-            throw new Error('Tidak dapat terhubung ke server. Periksa koneksi Anda.');
-          }
-        }
-        console.error('Unexpected error:', err);
-        throw new Error('Terjadi kesalahan yang tidak diketahui!');
+        handleApiError(err);
       }
     };
-
+    
+    const getPesertaKertosonoByNfc = async (nfc: string): Promise<PesertaKertosono | null | any> => {
+      try {
+        const response = await api.get('peserta-kertosono/getByNfc', { params: { nfc } });
+        return response.data.data;
+      } catch (err) {
+        handleApiError(err);
+      }
+    };
+    
     const storeAkademikKertosono = async (
       peserta_kertosono_id: string,
       penilaian: string,
-      kekurangan: string[] | null,
-      catatan: string | null,
-    ): Promise<AkademikKertosonoForm> => {
+      kekurangan_tajwid: string[],
+      kekurangan_khusus: string[],
+      kekurangan_keserasian: string[],
+      kekurangan_kelancaran: string[],
+      catatan: string | null
+    ): Promise<AkademikKertosonoForm | null | any> => {
       try {
-        // Make the API request with the constructed payload
         const response = await api.post<AkademikKertosonoForm>('akademik-kertosono', {
           peserta_kertosono_id,
           penilaian,
-          kekurangan,
+          kekurangan_tajwid,
+          kekurangan_khusus,
+          kekurangan_keserasian,
+          kekurangan_kelancaran,
           catatan,
         });
-
-        console.log( response.data)
-        return response.data; // Return the response data directly
+        return response.data;
       } catch (err) {
-        if (isAxiosError(err)) {
-          if (err.response && err.response.status) {
-            // Handle server response error
-            const message = err.response.data?.message || 'Terjadi kesalahan. Coba ulangi lagi!';
-            console.error('Store Failed:', message, err.response.data || err.message);
-            throw new Error(message);
-          } else if (err.code === 'ERR_NETWORK') {
-            // Handle network-related errors
-            console.error('Network error:', err.message);
-            throw new Error('Tidak dapat terhubung ke server. Periksa koneksi Anda.');
-          }
-        }
-        // Log unexpected errors
-        console.error('Unexpected error:', err);
-        throw new Error('Terjadi kesalahan yang tidak diketahui!');
+        handleApiError(err);
       }
-    };    
-
+    };
+    
     const storeAkhlakKertosono = async (
       peserta_kertosono_id: string,
       poin: number,
-      catatan: string,
-    ): Promise<AkhlakKertosonoForm> => {
+      catatan: string
+    ): Promise<AkhlakKertosonoForm | null | any> => {
       try {
-        // Make the API request with the constructed payload
         const response = await api.post<AkhlakKertosonoForm>('akhlak-kertosono', {
           peserta_kertosono_id,
           poin,
           catatan,
         });
-        
-        console.log( response.data)
-        return response.data; // Return the response data
+        return response.data;
       } catch (err) {
-        if (isAxiosError(err)) {
-          if (err.response && err.response.status) {
-            // Handle server error with a custom message
-            const message = err.response.data?.message || 'Terjadi kesalahan. Coba ulangi lagi!';
-            console.error('Store Failed:', message, err.response.data || err.message);
-            throw new Error(message);
-          } else if (err.code === 'ERR_NETWORK') {
-            // Handle network errors
-            console.error('Network error:', err.message);
-            throw new Error('Tidak dapat terhubung ke server. Periksa koneksi Anda.');
-          }
-        }
-        // Handle unexpected errors
-        console.error('Unexpected error:', err);
-        throw new Error('Terjadi kesalahan yang tidak diketahui!');
+        handleApiError(err);
       }
     };
 
