@@ -1,6 +1,7 @@
 import { atomWithStorage } from 'jotai/utils'
 
 export const statistikKediriAtom = atomWithStorage('statistik-kediri', {
+    "periode_tes" : '-',
     "overall": {
         "total_active_peserta": '-',
         "min_akademik_per_peserta": '-',
@@ -13,7 +14,7 @@ export const statistikKediriAtom = atomWithStorage('statistik-kediri', {
             "belum_pengetesan": '-'
         }
     },
-    "jenis_kelamin": {
+    "by_gender": {
         "Laki-laki": {
             "total_active_peserta": '-',
             "min_akademik_per_peserta": '-',
@@ -42,6 +43,7 @@ export const statistikKediriAtom = atomWithStorage('statistik-kediri', {
 });
 
 export const statistikKertosonoAtom = atomWithStorage('statistik-kertosono', {
+    "periode_tes" : '-',
     "overall": {
         "total_active_peserta": '-',
         "min_akademik_per_peserta": '-',
@@ -54,7 +56,7 @@ export const statistikKertosonoAtom = atomWithStorage('statistik-kertosono', {
             "belum_pengetesan": '-'
         }
     },
-    "jenis_kelamin": {
+    "by_gender": {
         "Laki-laki": {
             "total_active_peserta": '-',
             "min_akademik_per_peserta": '-',

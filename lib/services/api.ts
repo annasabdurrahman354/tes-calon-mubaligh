@@ -2,7 +2,7 @@ import axios, { isAxiosError } from 'axios';
 import { RESET } from 'jotai/utils';
 
 const api = axios.create({
-    baseURL: "http://rnndj-110-138-96-64.a.free.pinggy.link/api/",
+    baseURL: 'https://manage-tes.ppwb.my.id/api/',
     headers: {
         'Accept' : 'application/json'
     }

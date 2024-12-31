@@ -129,7 +129,7 @@ const Detail = () => {
                   <DataTable.Row key={item.id}>
                     <DataTable.Cell>{item.guru_nama}</DataTable.Cell>
                     <DataTable.Cell>{item.penilaian}</DataTable.Cell>
-                    <DataTable.Cell>{item.kekurangan}</DataTable.Cell>
+                    <DataTable.Cell>{[...item.kekurangan_tajwid, ...item.kekurangan_khusus, ...item.kekurangan_keserasian, ...item.kekurangan_kelancaran].join(', ')}</DataTable.Cell>
                     <DataTable.Cell>{item.catatan}</DataTable.Cell>
                   </DataTable.Row>
                 ))}

@@ -45,17 +45,12 @@ const RootLayout = () => {
   }, [error]);
 
   React.useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  React.useEffect(() => {
-    if (user) {
+    if (user && loaded) {
       loadToken();
       SplashScreen.hideAsync();
+      console.log(user)
     }
-  }, [user]);
+  }, [user, loaded]);
 
   if (!loaded) {
     return null;

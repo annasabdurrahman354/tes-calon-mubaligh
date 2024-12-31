@@ -4,12 +4,42 @@ import { useWindowDimensions, View, ScrollView } from "react-native";
 import { Shadow } from "react-native-shadow-2";
 import RNBounceable from "@freakycoder/react-native-bounceable";
 import * as HeroIcons from "react-native-heroicons/outline";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
+import { useStatistik } from "@/lib/services/useStatistik";
+import { useAuth } from "@/lib/services/useAuth";
+import { ROLE } from "@/lib/types/Enums";
+import { useSnackbar } from "@/lib/services/useSnackbar";
 
 const TabsHome = () => {
   const theme = useTheme();
   const { height, width } = useWindowDimensions();
+  const { getStatistikKediri, getStatistikKertosono, statistikKediri, statistikKertosono } = useStatistik();
+  const { hasRole } =  useAuth();
+  const { newSnackbar } = useSnackbar();
 
+  // Fetch Statistik
+  const fetchStatistik = async () => {
+    try {
+      if (hasRole(ROLE.GURU_KEDIRI) || hasRole(ROLE.ADMIN_KEDIRI) || hasRole(ROLE.SUPERADMIN)) {
+        await getStatistikKediri();
+      }
+      if (hasRole(ROLE.GURU_KERTOSONO) || hasRole(ROLE.ADMIN_KERTOSONO) || hasRole(ROLE.SUPERADMIN)) {
+        await getStatistikKertosono();
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        newSnackbar(error.message);
+      }
+    }
+  };
+
+  // Fetch Statistik when page is focused
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchStatistik(); // Call the fetch function when the page is focused
+    }, [])
+  );
+  
   return (
     <Surface style={{ flex: 1, flexDirection: "column" }}>
       <ScrollView>
@@ -42,7 +72,7 @@ const TabsHome = () => {
                 variant="titleMedium"
                 style={{ color: theme.colors.outline }}
               >
-                Januari 2024
+                {statistikKediri.periode_tes != '-' ? statistikKediri.periode_tes : statistikKertosono.periode_tes}
               </Text>
             </View>
 
@@ -62,67 +92,67 @@ const TabsHome = () => {
             </Shadow>
           </View>
 
-          <Divider></Divider>
+          
 
-          <Text
-            variant="bodyLarge"
-            style={{
-              fontWeight: "bold",
-              color: theme.colors.onSecondaryContainer,
-            }}
-          >
-            Ringkasan
-          </Text>
-
-          <View
-            style={{
-              flexDirection: "row",
-              flexWrap: width < 720 ? "wrap" : "nowrap", // Allow the items to wrap onto a new row
-              gap: 16,
-              paddingBottom: 16,
-            }}
-          >
-            <StatCard
-              title="Jumlah Santri"
-              value="899"
-              cardBackgroundColor={theme.colors.background}
-              icon={HeroIcons.UserGroupIcon}
-              iconShadowColor="#CEF1FC"
-              iconBackgroundColor="#117AD6"
-            />
-            <StatCard
-              title="Penyimakan Terbanyak"
-              value="7"
-              cardBackgroundColor={theme.colors.background}
-              icon={HeroIcons.ArrowTrendingUpIcon}
-              iconShadowColor="#D6FDDA"
-              iconBackgroundColor="#34D886"
-            />
-            <StatCard
-              title="Penyimakan Tersedikit"
-              value="5"
-              cardBackgroundColor={theme.colors.background}
-              icon={HeroIcons.ArrowTrendingDownIcon}
-              iconShadowColor="#FFEBD4"
-              iconBackgroundColor="#FF632B"
-            />
-            <StatCard
-              title="Penyimakan Anda"
-              value="120"
-              cardBackgroundColor={theme.colors.background}
-              icon={HeroIcons.BookOpenIcon}
-              iconShadowColor="#DCE6FD"
-              iconBackgroundColor="#4B6AD8"
-            />
-          </View>
-          <View
-            style={{
-              paddingBottom: 16,
-              gap: 16,
-              flex: 1,
-              width: "100%",
-            }}
-          >
+          {(hasRole(ROLE.GURU_KEDIRI) || hasRole(ROLE.ADMIN_KEDIRI) || hasRole(ROLE.SUPERADMIN)) &&
+            <>
+              <Divider></Divider>
+              <Text
+                variant="bodyLarge"
+                style={{
+                  fontWeight: "bold",
+                  color: theme.colors.onSecondaryContainer,
+                }}
+              >
+                Ringkasan Tes Kediri
+              </Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  flexWrap: width < 720 ? "wrap" : "nowrap", // Allow the items to wrap onto a new row
+                  gap: 16,
+                  paddingBottom: 16,
+                }}
+              >
+                <StatCard
+                  title="Jumlah Santri"
+                  value={statistikKediri.overall.total_active_peserta}
+                  cardBackgroundColor={theme.colors.background}
+                  icon={HeroIcons.UserGroupIcon}
+                  iconShadowColor="#CEF1FC"
+                  iconBackgroundColor="#117AD6"
+                />
+                <StatCard
+                  title="Penyimakan Maksimum"
+                  value={statistikKediri.overall.max_akademik_per_peserta}
+                  cardBackgroundColor={theme.colors.background}
+                  icon={HeroIcons.ArrowTrendingUpIcon}
+                  iconShadowColor="#D6FDDA"
+                  iconBackgroundColor="#34D886"
+                />
+                <StatCard
+                  title="Penyimakan Minimum"
+                  value={statistikKediri.overall.min_akademik_per_peserta}
+                  cardBackgroundColor={theme.colors.background}
+                  icon={HeroIcons.ArrowTrendingDownIcon}
+                  iconShadowColor="#FFEBD4"
+                  iconBackgroundColor="#FF632B"
+                />
+                <StatCard
+                  title="Penyimakan Anda"
+                  value={statistikKediri.overall.user_akademik_count}
+                  cardBackgroundColor={theme.colors.background}
+                  icon={HeroIcons.BookOpenIcon}
+                  iconShadowColor="#DCE6FD"
+                  iconBackgroundColor="#4B6AD8"
+                />
+              </View>
+            </>
+          }
+          
+          {(hasRole(ROLE.GURU_KERTOSONO) || hasRole(ROLE.ADMIN_KERTOSONO) || hasRole(ROLE.SUPERADMIN)) &&
+            <>
+            <Divider></Divider>
             <Text
               variant="bodyLarge"
               style={{
@@ -130,84 +160,157 @@ const TabsHome = () => {
                 color: theme.colors.onSecondaryContainer,
               }}
             >
-              Pengetesan Kediri
+              Ringkasan Tes Kertosono
             </Text>
+            <View
+                style={{
+                  flexDirection: "row",
+                  flexWrap: width < 720 ? "wrap" : "nowrap", // Allow the items to wrap onto a new row
+                  gap: 16,
+                  paddingBottom: 16,
+                }}
+              >
+                <StatCard
+                  title="Jumlah Santri"
+                  value={statistikKertosono.overall.total_active_peserta}
+                  cardBackgroundColor={theme.colors.background}
+                  icon={HeroIcons.UserGroupIcon}
+                  iconShadowColor="#CEF1FC"
+                  iconBackgroundColor="#117AD6"
+                />
+                <StatCard
+                  title="Penyimakan Maksimum"
+                  value={statistikKertosono.overall.max_akademik_per_peserta}
+                  cardBackgroundColor={theme.colors.background}
+                  icon={HeroIcons.ArrowTrendingUpIcon}
+                  iconShadowColor="#D6FDDA"
+                  iconBackgroundColor="#34D886"
+                />
+                <StatCard
+                  title="Penyimakan Minimum"
+                  value={statistikKertosono.overall.min_akademik_per_peserta}
+                  cardBackgroundColor={theme.colors.background}
+                  icon={HeroIcons.ArrowTrendingDownIcon}
+                  iconShadowColor="#FFEBD4"
+                  iconBackgroundColor="#FF632B"
+                />
+                <StatCard
+                  title="Penyimakan Anda"
+                  value={statistikKertosono.overall.user_akademik_count}
+                  cardBackgroundColor={theme.colors.background}
+                  icon={HeroIcons.BookOpenIcon}
+                  iconShadowColor="#DCE6FD"
+                  iconBackgroundColor="#4B6AD8"
+                />
+              </View>
+            </>
+          }
 
-            <MainMenu
-              title="Nilai Penyampaian"
-              cardBackgroundColor={theme.colors.background}
-              icon={HeroIcons.BookOpenIcon}
-              iconShadowColor="#E5FCD9"
-              iconBackgroundColor="#3FD13F"
-              onClick={() => router.push("/(app)/akademik-kediri")}
-            />
-            <MainMenu
-              title="Nilai Akhlak"
-              cardBackgroundColor={theme.colors.background}
-              icon={HeroIcons.FingerPrintIcon}
-              iconShadowColor="#E5FCD9"
-              iconBackgroundColor="#3FD13F"
-              onClick={() => router.push("/(app)/akhlak-kediri")}
-            />
-            <MainMenu
-              title="Daftar Peserta Tes"
-              cardBackgroundColor={theme.colors.background}
-              icon={HeroIcons.UserGroupIcon}
-              iconShadowColor="#E5FCD9"
-              iconBackgroundColor="#3FD13F"
-              onClick={() => router.push("/(app)/peserta-kediri")}
-            />
-          </View>
-
-          <View
-            style={{
-              gap: 16,
-              flex: 1,
-              width: "100%",
-            }}
-          >
-            <Text
-              variant="bodyLarge"
+          {(hasRole(ROLE.GURU_KEDIRI) || hasRole(ROLE.ADMIN_KEDIRI) || hasRole(ROLE.SUPERADMIN)) &&
+            <View
               style={{
-                fontWeight: "bold",
-                color: theme.colors.onSecondaryContainer,
+                paddingBottom: 16,
+                gap: 16,
+                flex: 1,
+                width: "100%",
               }}
             >
-              Pengetesan Kertosono
-            </Text>
+              <Text
+                variant="bodyLarge"
+                style={{
+                  fontWeight: "bold",
+                  color: theme.colors.onSecondaryContainer,
+                }}
+              >
+                Pengetesan Kediri
+              </Text>
 
-            <MainMenu
-              title="Nilai Bacaan"
-              cardBackgroundColor={theme.colors.background}
-              icon={HeroIcons.BookOpenIcon}
-              iconShadowColor="#E5FCD9"
-              iconBackgroundColor="#3FD13F"
-              onClick={() => router.push("/(app)/akademik-kertosono")}
-            />
-            <MainMenu
-              title="Nilai Akhlak"
-              cardBackgroundColor={theme.colors.background}
-              icon={HeroIcons.FingerPrintIcon}
-              iconShadowColor="#E5FCD9"
-              iconBackgroundColor="#3FD13F"
-              onClick={() => router.push("/(app)/akhlak-kertosono")}
-            />
-            <MainMenu
-              title="Daftar Peserta Tes"
-              cardBackgroundColor={theme.colors.background}
-              icon={HeroIcons.UserGroupIcon}
-              iconShadowColor="#E5FCD9"
-              iconBackgroundColor="#3FD13F"
-              onClick={() => router.push("/(app)/peserta-kertosono")}
-            />
-          </View>
+              {(hasRole(ROLE.GURU_KEDIRI) || hasRole(ROLE.SUPERADMIN)) &&
+                <>
+                  <MainMenu
+                    title="Nilai Penyampaian"
+                    cardBackgroundColor={theme.colors.background}
+                    icon={HeroIcons.BookOpenIcon}
+                    iconShadowColor="#E5FCD9"
+                    iconBackgroundColor="#3FD13F"
+                    onClick={() => router.push("/(app)/akademik-kediri")}
+                  />
+                  <MainMenu
+                    title="Nilai Akhlak"
+                    cardBackgroundColor={theme.colors.background}
+                    icon={HeroIcons.FingerPrintIcon}
+                    iconShadowColor="#E5FCD9"
+                    iconBackgroundColor="#3FD13F"
+                    onClick={() => router.push("/(app)/akhlak-kediri")}
+                  />
+                </>
+              }           
+              <MainMenu
+                title="Daftar Peserta Tes"
+                cardBackgroundColor={theme.colors.background}
+                icon={HeroIcons.UserGroupIcon}
+                iconShadowColor="#E5FCD9"
+                iconBackgroundColor="#3FD13F"
+                onClick={() => router.push("/(app)/peserta-kediri")}
+              />
+            </View>
+          }
+          {(hasRole(ROLE.GURU_KERTOSONO) || hasRole(ROLE.ADMIN_KERTOSONO) || hasRole(ROLE.SUPERADMIN)) &&
+            <View
+              style={{
+                gap: 16,
+                flex: 1,
+                width: "100%",
+              }}
+            >
+              <Text
+                variant="bodyLarge"
+                style={{
+                  fontWeight: "bold",
+                  color: theme.colors.onSecondaryContainer,
+                }}
+              >
+                Pengetesan Kertosono
+              </Text>
+
+              {(hasRole(ROLE.GURU_KEDIRI) || hasRole(ROLE.SUPERADMIN)) &&
+               <>
+                <MainMenu
+                  title="Nilai Bacaan"
+                  cardBackgroundColor={theme.colors.background}
+                  icon={HeroIcons.BookOpenIcon}
+                  iconShadowColor="#E5FCD9"
+                  iconBackgroundColor="#3FD13F"
+                  onClick={() => router.push("/(app)/akademik-kertosono")}
+                />
+                <MainMenu
+                  title="Nilai Akhlak"
+                  cardBackgroundColor={theme.colors.background}
+                  icon={HeroIcons.FingerPrintIcon}
+                  iconShadowColor="#E5FCD9"
+                  iconBackgroundColor="#3FD13F"
+                  onClick={() => router.push("/(app)/akhlak-kertosono")}
+                />
+               </>
+              }
+              
+              <MainMenu
+                title="Daftar Peserta Tes"
+                cardBackgroundColor={theme.colors.background}
+                icon={HeroIcons.UserGroupIcon}
+                iconShadowColor="#E5FCD9"
+                iconBackgroundColor="#3FD13F"
+                onClick={() => router.push("/(app)/peserta-kertosono")}
+              />
+            </View>
+          }
         </View>
       </ScrollView>
     </Surface>
   );
 };
 
-const StatCard = ({
+export const StatCard = ({
   title,
   value,
   cardBackgroundColor,

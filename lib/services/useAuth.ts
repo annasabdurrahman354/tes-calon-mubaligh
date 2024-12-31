@@ -10,6 +10,7 @@ export function useAuth() {
 
   const user = useAtomValue(sessionAtom)?.user;
   const token = useAtomValue(sessionAtom)?.token;
+  const roles = useAtomValue(sessionAtom)?.user?.roles;
 
   const loginCredential = async (username: string, password: string): Promise<Session | null> => {
     try {
@@ -90,5 +91,9 @@ export function useAuth() {
     }  
   };
 
-  return { loginCredential, loginNfc, logout,loadToken, user, token};
+  const hasRole = (role: string) => {
+    return roles?.includes(role)
+  }
+
+  return { loginCredential, loginNfc, logout, loadToken, hasRole, user, token};
 }
