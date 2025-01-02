@@ -40,7 +40,7 @@ const Penilaian = () => {
             <View style={styles.header}>
               <Avatar.Image
                 size={72}
-                source={require("@/assets/images/dummy-profile.png")}
+                source={{uri: "https://ppwb.kita-kita.online/registrasi-tes/images/" + pilihPesertaKertosono?.foto_smartcard}}
               />
               <View style={{ flex: 1, marginBottom: 8 }}>
                 {/* Nama peserta tes */}

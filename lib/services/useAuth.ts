@@ -82,7 +82,7 @@ export function useAuth() {
   const logout = async () => {
     try {
       const response = await api.post('logout');
-      setSession(RESET);
+      setSession(null);
       //setSession(null)
       removeAuthToken();
       return response.data.message;

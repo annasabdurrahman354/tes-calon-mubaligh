@@ -183,7 +183,7 @@ const Penilaian = () => {
                   borderWidth: 4,
                   borderRadius: 1000,
                 }}
-                source={require("@/assets/images/dummy-profile.png")}
+                source={{uri: "https://ppwb.kita-kita.online/registrasi-tes/images/" + peserta.foto_smartcard}}
               />
               <Text
                 style={{
@@ -220,7 +220,7 @@ const Penilaian = () => {
             <View style={styles.header}>
               <Avatar.Image
                 size={72}
-                source={require("@/assets/images/dummy-profile.png")}
+                source={{uri: "https://ppwb.kita-kita.online/registrasi-tes/images/" + selectedPesertaKertosono[activePenilaian].foto_smartcard}}
               />
               <View style={{ flex: 1, marginBottom: 8 }}>
                 {/* Nama peserta tes */}
@@ -591,8 +591,8 @@ const FormPenilaianAkademikKertosono = ({
                         showSelectedCheck: true
                       },
                       {
-                        value: 'Tafkjim-Tarqiq',
-                        label: 'Tafkjim-Tarqiq',
+                        value: 'Tafkhim-Tarqiq',
+                        label: 'Tafkhim-Tarqiq',
                         showSelectedCheck: true
                       },
                     ]}

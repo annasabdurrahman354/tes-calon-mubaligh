@@ -13,7 +13,8 @@ import { useStatistik } from "@/lib/services/useStatistik";
 import { useAuth } from "@/lib/services/useAuth";
 import { ROLE } from "@/lib/types/Enums";
 import { useFocusEffect } from "expo-router";
-import { ScrollView } from "react-native-gesture-handler";
+import { GestureHandlerRootView, ScrollView } from "react-native-gesture-handler";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import * as HeroIcons from "react-native-heroicons/outline";
 import { Shadow } from "react-native-shadow-2";
 import { StatCard } from ".";
@@ -53,22 +54,34 @@ const Rekap = () => {
     }, [])
   );
 
-  const DataCard = ({ icon, title, value }) => (
+  const DataCard = ({   
+    icon: Icon,
+    iconShadowColor,
+    iconBackgroundColor, 
+    title, value 
+  }) => (
     <View
       style={{
         flexDirection: 'row',
         alignItems: 'center',
         marginVertical: 8,
+        gap: 16
       }}
     >
-      <IconButton
-        icon={icon}
-        size={24}
+      <Shadow
+        distance={4}
+        startColor={iconShadowColor}
         style={{
-          backgroundColor: '#e3f2fd',
-          marginRight: 12,
+          width: 36,
+          height: 36,
+          borderRadius: 16,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: iconBackgroundColor,
         }}
-      />
+      >
+        <Icon size={24} color={theme.colors.onPrimary} />
+      </Shadow>
       <View>
         <Text
           style={{
@@ -109,14 +122,22 @@ const Rekap = () => {
             marginBottom: 8,
           }}
         >
-          <Avatar.Icon
-            size={40}
-            icon={gender === "Laki-laki" ? "account" : "account-outline"}
-            style={{
-              marginRight: 12,
-              backgroundColor: theme.colors.primary,
-            }}
-          />
+           <Shadow
+              distance={8}
+              startColor={"#E5FCD9"}
+              style={{
+                marginRight: 16,
+                width: 48,
+                height: 48,
+                borderRadius: 16,
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "#3FD13F",
+              }}
+            >
+               <FontAwesome5 size={24} name={gender == "Laki-laki" ? "male" : "female"} color={theme.colors.onPrimary} />
+            </Shadow>
+          
           <Text
             variant="bodyLarge"
             style={{
@@ -133,23 +154,31 @@ const Rekap = () => {
           }}
         />
         <DataCard
-          icon="account-group"
-          title="Total Active Peserta"
+          icon={HeroIcons.UserGroupIcon}
+          iconShadowColor="#CEF1FC"
+          iconBackgroundColor="#117AD6"
+          title="Jumlah Santri"
           value={stats.total_active_peserta}
         />
-        <DataCard
-          icon="numeric-6-circle"
-          title="Min Akademik per Peserta"
-          value={stats.min_akademik_per_peserta}
-        />
-        <DataCard
-          icon="numeric-7-circle"
-          title="Max Akademik per Peserta"
+         <DataCard
+          icon={HeroIcons.ArrowTrendingUpIcon}
+          iconShadowColor="#D6FDDA"
+          iconBackgroundColor="#34D886"
+          title="Penyimakan Maksimum"
           value={stats.max_akademik_per_peserta}
         />
         <DataCard
-          icon="school"
-          title="User Akademik Count"
+          icon={HeroIcons.ArrowTrendingDownIcon}
+          iconShadowColor="#FFEBD4"
+          iconBackgroundColor="#FF632B"
+          title="Penyimakan Minimum"
+          value={stats.min_akademik_per_peserta}
+        />
+        <DataCard
+          icon={HeroIcons.BookOpenIcon}
+          iconShadowColor="#DCE6FD"
+          iconBackgroundColor="#4B6AD8"
+          title="Penyimakan Anda"
           value={stats.user_akademik_count}
         />
         <Divider
@@ -168,22 +197,30 @@ const Rekap = () => {
           Hasil Sistem:
         </Text>
         <DataCard
-          icon="check-circle"
+          icon={HeroIcons.CheckCircleIcon}
+          iconShadowColor={theme.colors.elevation.level4}
+          iconBackgroundColor={theme.colors.inversePrimary}
           title="Lulus"
           value={stats.hasil_sistem.lulus}
         />
         <DataCard
-          icon="close-circle"
+          icon={HeroIcons.XMarkIcon}
+          iconShadowColor={theme.colors.elevation.level4}
+          iconBackgroundColor={theme.colors.inversePrimary}
           title="Tidak Lulus"
           value={stats.hasil_sistem.tidak_lulus}
         />
         <DataCard
-          icon="alert-circle"
+          icon={HeroIcons.BellAlertIcon}
+          iconShadowColor={theme.colors.elevation.level4}
+          iconBackgroundColor={theme.colors.inversePrimary}
           title="Perlu Musyawarah"
           value={stats.hasil_sistem.perlu_musyawarah}
         />
         <DataCard
-          icon="help-circle"
+          icon={HeroIcons.InformationCircleIcon}
+          iconShadowColor={theme.colors.elevation.level4}
+          iconBackgroundColor={theme.colors.inversePrimary}
           title="Belum Pengetesan"
           value={stats.hasil_sistem.belum_pengetesan}
         />
@@ -193,6 +230,7 @@ const Rekap = () => {
   
 
   return (
+    <GestureHandlerRootView>
     <Surface style={{ flex: 1 }}>
       <ScrollView>
         <View
@@ -364,6 +402,7 @@ const Rekap = () => {
         </View>
       </ScrollView>
     </Surface>
+    </GestureHandlerRootView>
   );
 };
 

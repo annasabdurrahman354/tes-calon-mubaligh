@@ -140,7 +140,7 @@ const Search = () => {
               icon={() => (
                 <Avatar.Image
                   size={24}
-                  source={require("@/assets/images/dummy-profile.png")}
+                  source={{uri: "https://ppwb.kita-kita.online/registrasi-tes/images/" + item.foto_smartcard}}
                 />
               )}
               onClose={() => toggleSelectedPesertaKertosono(item)}
@@ -238,7 +238,7 @@ const ParticipantCard = ({
               borderRadius: theme.roundness * 3,
               alignSelf: "center",
             }}
-            source={require("@/assets/images/dummy-profile.png")}
+            source={{uri: "https://ppwb.kita-kita.online/registrasi-tes/images/" + peserta.foto_smartcard}}
           />
           <Chip
             icon="account-group"

@@ -58,6 +58,7 @@ export type PesertaKertosono = {
   total_poin_akhlak: number;
   hasil_sistem: number;
   telah_disimak: boolean;
+  foto_smartcard: string;
   akhlak: AkhlakKertosono[];
   akademik: AkademikKertosono[];
 }
