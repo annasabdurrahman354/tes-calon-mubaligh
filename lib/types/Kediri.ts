@@ -4,6 +4,7 @@ export type AkhlakKediri = {
   guru_nama: string;
   catatan: string;
   poin: number;
+  created_at: string | null;
 }
 
 export type AkademikKediri = {
@@ -16,7 +17,7 @@ export type AkademikKediri = {
   nilai_pemahaman: number;
   rata_rata: number;
   catatan: string | null;
-  status_lulus: string;
+  created_at: string | null;
 }
 
 export type AkhlakKediriForm = {

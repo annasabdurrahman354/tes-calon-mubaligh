@@ -2,7 +2,7 @@ import { isAxiosError } from 'axios';
 import { useAtom, useAtomValue } from 'jotai';
 import { sessionAtom } from '../atoms/authAtom';
 import { Session } from '../types/Auth';
-import api, { handleApiError, handleLogoutApiError, removeAuthToken, setAuthToken } from './api';
+import api, { handleLogoutApiError, removeAuthToken, setAuthToken } from './api';
 import { RESET } from 'jotai/utils';
 
 export function useAuth() {
@@ -82,7 +82,7 @@ export function useAuth() {
   const logout = async () => {
     try {
       const response = await api.post('logout');
-      setSession(null);
+      setSession(RESET);
       //setSession(null)
       removeAuthToken();
       return response.data.message;

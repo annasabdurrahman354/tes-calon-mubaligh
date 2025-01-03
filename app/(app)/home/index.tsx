@@ -273,7 +273,7 @@ const TabsHome = () => {
                 Pengetesan Kertosono
               </Text>
 
-              {(hasRole(ROLE.GURU_KEDIRI) || hasRole(ROLE.SUPERADMIN)) &&
+              {(hasRole(ROLE.GURU_KERTOSONO) || hasRole(ROLE.SUPERADMIN)) &&
                <>
                 <MainMenu
                   title="Nilai Bacaan"

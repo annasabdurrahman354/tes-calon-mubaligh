@@ -90,6 +90,9 @@ const Penilaian = () => {
           kekurangan_keserasian: [],
           kekurangan_kelancaran: [],
           catatan: "",
+          awal_penilaian: Date.now(),
+          akhir_penilaian: null,
+          lama_penilaian: null
         }
       );
     });
