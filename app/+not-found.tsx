@@ -1,32 +1,20 @@
-import { Link, Stack } from 'expo-router';
-import { StyleSheet } from 'react-native';
+import { Link, Stack } from "expo-router";
+import React from "react";
+import { Surface, Text } from "react-native-paper";
+import { styles } from "@/lib";
 
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+const NotFound = () => (
+  <Surface style={styles.screen}>
+    <Stack.Screen options={{ title: "Halaman Tidak Ditemukan" }} />
 
-export default function NotFoundScreen() {
-  return (
-    <>
-      <Stack.Screen options={{ title: 'Oops!' }} />
-      <ThemedView style={styles.container}>
-        <ThemedText type="title">This screen doesn't exist.</ThemedText>
-        <Link href="/" style={styles.link}>
-          <ThemedText type="link">Go to home screen!</ThemedText>
-        </Link>
-      </ThemedView>
-    </>
-  );
-}
+    <Text variant="displayLarge">Halaman Tidak Ditemukan</Text>
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  link: {
-    marginTop: 15,
-    paddingVertical: 15,
-  },
-});
+    <Text variant="bodyLarge">404 Not Found</Text>
+
+    <Link href="/">
+      <Text variant="bodyLarge">Kembali</Text>
+    </Link>
+  </Surface>
+);
+
+export default NotFound;

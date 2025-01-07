@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "tes-calon-mubaligh",
+    "name": "Tes Calon Mubaligh",
     "slug": "tes-calon-mubaligh",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -8,14 +8,26 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "ExpoLocalization_supportsRTL": true
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.walibarokah.tescalonmubaligh"
     },
     "web": {
       "bundler": "metro",
@@ -24,18 +36,30 @@
     },
     "plugins": [
       "expo-router",
+      "expo-font",
       [
-        "expo-splash-screen",
+        "expo-build-properties",
         {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "android": {
+            "enableProguardInReleaseBuilds": true,
+            "enableShrinkResourcesInReleaseBuilds": true,
+            "useLegacyPackaging": true,
+            "enableSeparateBuildPerCPUArchitecture": true
+          }
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "supportsRTL": true,
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "6944e135-a854-4923-af51-b20674b9f8d3"
+      }
     }
   }
 }
