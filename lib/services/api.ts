@@ -2,7 +2,7 @@ import axios, { isAxiosError } from 'axios';
 import { RESET } from 'jotai/utils';
 
 const api = axios.create({
-    baseURL: 'https://manage-tes.ppwb.my.id/api/',
+    baseURL: process.env.EXPO_PUBLIC_API_URL,
     headers: {
         'Accept' : 'application/json'
     }
