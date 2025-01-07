@@ -39,9 +39,10 @@ const Detail = () => {
                 >
                   {pilihPesertaKediri?.nama}
                 </Text>
-                <Text variant="titleSmall">
-                  bin {pilihPesertaKediri?.nama_ayah}
-                </Text>
+                {pilihPesertaKediri?.jenis_kelamin == "Laki-laki" ?
+                  <Text variant="titleSmall">bin {pilihPesertaKediri?.nama_ayah}</Text> :
+                  <Text variant="titleSmall">binti {pilihPesertaKediri?.nama_ayah}</Text>
+                }
               </View>
             </View>
             <View

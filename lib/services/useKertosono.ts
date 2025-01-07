@@ -48,7 +48,8 @@ export function useKertosono() {
       kekurangan_khusus: string[],
       kekurangan_keserasian: string[],
       kekurangan_kelancaran: string[],
-      catatan: string | null
+      catatan: string | null,
+      durasi_penilaian: number
     ): Promise<AkademikKertosonoForm | null | any> => {
       try {
         const response = await api.post<AkademikKertosonoForm>('akademik-kertosono', {
@@ -59,6 +60,7 @@ export function useKertosono() {
           kekurangan_keserasian,
           kekurangan_kelancaran,
           catatan,
+          durasi_penilaian
         });
         return response.data;
       } catch (err) {

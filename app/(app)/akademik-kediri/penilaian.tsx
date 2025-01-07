@@ -233,9 +233,10 @@ const Penilaian = () => {
                 >
                   {selectedPesertaKediri[activePenilaian].nama}
                 </Text>
-                <Text variant="titleSmall">
-                  bin {selectedPesertaKediri[activePenilaian].nama_ayah}
-                </Text>
+                {selectedPesertaKediri[activePenilaian].jenis_kelamin == "Laki-laki" ?
+                  <Text variant="titleSmall">bin {selectedPesertaKediri[activePenilaian].nama_ayah}</Text> :
+                  <Text variant="titleSmall">binti {selectedPesertaKediri[activePenilaian].nama_ayah}</Text>
+                }
               </View>
             </View>
             <View
@@ -315,17 +316,21 @@ const Penilaian = () => {
               <DataTable>
                 <DataTable.Header>
                   <DataTable.Title>Dewan Guru</DataTable.Title>
-                  <DataTable.Title>Nilai Rata-Rata</DataTable.Title>
+                  <DataTable.Title>Makna</DataTable.Title>
+                  <DataTable.Title>Keterangan</DataTable.Title>
+                  <DataTable.Title>Penjelasan</DataTable.Title>
+                  <DataTable.Title>Pemahaman</DataTable.Title>
                   <DataTable.Title>Catatan Penguji</DataTable.Title>
-                  <DataTable.Title>Status</DataTable.Title>
                 </DataTable.Header>
 
                 {selectedPesertaKediri[activePenilaian].akademik.map((item) => (
                   <DataTable.Row key={item.id}>
                     <DataTable.Cell>{item.guru_nama}</DataTable.Cell>
-                    <DataTable.Cell>{item.rata_rata}</DataTable.Cell>
+                    <DataTable.Cell>{item.nilai_makna}</DataTable.Cell>
+                    <DataTable.Cell>{item.nilai_keterangan}</DataTable.Cell>
+                    <DataTable.Cell>{item.nilai_penjelasan}</DataTable.Cell>
+                    <DataTable.Cell>{item.nilai_pemahaman}</DataTable.Cell>
                     <DataTable.Cell>{item.catatan}</DataTable.Cell>
-                    <DataTable.Cell>{item.status_lulus}</DataTable.Cell>
                   </DataTable.Row>
                 ))}
               </DataTable>

@@ -121,6 +121,7 @@ const Layout = () => {
                   style={{ marginRight: 8 }}
                   onPress={handlePresentModalPress}
                   icon="credit-card"
+                  disabled
                 >
                   Gunakan Smartcard
                 </Button>

@@ -95,5 +95,5 @@ export function useAuth() {
     return roles?.includes(role)
   }
 
-  return { loginCredential, loginNfc, logout, loadToken, hasRole, user, token};
+  return { loginCredential, loginNfc, logout, loadToken, hasRole, user, token, setSession};
 }

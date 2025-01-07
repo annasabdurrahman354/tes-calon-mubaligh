@@ -208,11 +208,11 @@ const ParticipantCard = ({
             borderRadius: theme.roundness * 2,
           }}
         >
-          <View style={{ flexDirection: "row", gap: 4, alignItems: "center" }}>
+           <View style={{ flexDirection: "row", gap: 4, alignItems: "center" }}>
             <Text variant="titleMedium" style={{ fontWeight: "bold" }}>
               {peserta.nama}
             </Text>
-            {peserta.count_akademik_lulus + peserta.count_akademik_tidak_lulus >
+            {peserta.jumlah_penyimakan >
               0 && (
               <Text
                 style={{
@@ -222,12 +222,14 @@ const ParticipantCard = ({
                   backgroundColor: theme.colors.error,
                 }}
               >
-                {peserta.count_akademik_lulus +
-                  peserta.count_akademik_tidak_lulus}
+                {peserta.jumlah_penyimakan}
               </Text>
             )}
           </View>
-          <Text variant="titleSmall">bin {peserta.nama_ayah}</Text>
+          {peserta.jenis_kelamin == "Laki-laki" ?
+            <Text variant="titleSmall">bin {peserta.nama_ayah}</Text> :
+            <Text variant="titleSmall">binti {peserta.nama_ayah}</Text>
+          }
           <Divider bold style={{ marginVertical: 1 }} />
 
           <View>

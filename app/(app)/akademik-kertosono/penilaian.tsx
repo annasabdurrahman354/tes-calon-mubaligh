@@ -4,6 +4,7 @@ import {
   Avatar,
   Button,
   Card,
+  Checkbox,
   Chip,
   IconButton,
   Surface,
@@ -24,6 +25,8 @@ import { useSnackbar } from "@/lib/services/useSnackbar";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import {CreditCardIcon} from "react-native-heroicons/outline";
+import { useAuth } from "@/lib/services/useAuth";
+import CheckboxGroup from "@/lib/components/CheckboxGroup";
 
 const Penilaian = () => {
   const theme = useTheme();
@@ -34,6 +37,7 @@ const Penilaian = () => {
   const [nfcId, setNfcId] = useState("");
   const [useSmartcard, setUseSmartCard] = useState(false);
   const [smartCardMessage, setSmartCardMessage] = useState("");
+  const {user} = useAuth();
 
   const inputRef = useRef(null);
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
@@ -59,6 +63,9 @@ const Penilaian = () => {
 
       if (peserta?.telah_disimak) {
         setSmartCardMessage(`${peserta.nama} sudah pernah anda simak.`);
+        addSelectedPesertaKertosono(peserta);
+        setNfcId("");
+        inputRef.current?.focus();
       } else {
         setSmartCardMessage(`${peserta?.nama} telah ditambahkan.`);
         addSelectedPesertaKertosono(peserta);
@@ -75,12 +82,38 @@ const Penilaian = () => {
     inputRef.current?.focus(); // Refocus the input field
   };
 
-  // Synchronize formValues with selectedPesertaKertosono
   useEffect(() => {
     const updatedFormValues = selectedPesertaKertosono.map((peserta) => {
       const existingForm = formValues.find(
         (form) => form.peserta_kertosono_id === peserta.id
       );
+  
+      if (peserta.telah_disimak) {
+        // Check if the peserta has a matching akademik entry for the guru_id
+        const akademikEntry = peserta.akademik?.find(
+          (akademik) => akademik.guru_id == user?.id
+        );
+  
+        if (akademikEntry) {
+          // Pre-fill the form with data from akademikEntry
+          return (
+            existingForm || {
+              peserta_kertosono_id: peserta.id,
+              penilaian: akademikEntry.penilaian || "",
+              kekurangan_tajwid: akademikEntry.kekurangan_tajwid || [],
+              kekurangan_khusus: akademikEntry.kekurangan_khusus || [],
+              kekurangan_keserasian: akademikEntry.kekurangan_keserasian || [],
+              kekurangan_kelancaran: akademikEntry.kekurangan_kelancaran || [],
+              catatan: akademikEntry.catatan || "",
+              awal_penilaian: Date.now(),
+              akhir_penilaian: null,
+              durasi_penilaian: akademikEntry.durasi_penilaian
+            }
+          );
+        }
+      }
+  
+      // Default to existingForm or a blank form for this peserta
       return (
         existingForm || {
           peserta_kertosono_id: peserta.id,
@@ -92,12 +125,14 @@ const Penilaian = () => {
           catatan: "",
           awal_penilaian: Date.now(),
           akhir_penilaian: null,
-          lama_penilaian: null
+          durasi_penilaian: null
         }
       );
     });
+  
     setFormValues(updatedFormValues);
   }, [selectedPesertaKertosono]);
+  
 
   const handleRemovePeserta = (indexToRemove) => {
     const pesertaToRemove = selectedPesertaKertosono[indexToRemove];
@@ -213,7 +248,7 @@ const Penilaian = () => {
           mode="contained"
           iconColor={theme.colors.primary}
           size={24}
-          onPress={() => handlePresentModalPress()}
+          onPress={() => router.back()}
         />
       </View>
 
@@ -236,9 +271,10 @@ const Penilaian = () => {
                 >
                   {selectedPesertaKertosono[activePenilaian].nama}
                 </Text>
-                <Text variant="titleSmall">
-                  bin {selectedPesertaKertosono[activePenilaian].nama_ayah}
-                </Text>
+                {selectedPesertaKertosono[activePenilaian].jenis_kelamin == "Laki-laki" ?
+                  <Text variant="titleSmall">bin {selectedPesertaKertosono[activePenilaian].nama_ayah}</Text> :
+                  <Text variant="titleSmall">binti {selectedPesertaKertosono[activePenilaian].nama_ayah}</Text>
+                }
               </View>
             </View>
             <View
@@ -294,7 +330,7 @@ const Penilaian = () => {
             },
             {
               value: "riwayat",
-              label: "Riwayat Penilaian",
+              label: "Riwayat Penyimak",
             },
           ]}
         />
@@ -317,18 +353,18 @@ const Penilaian = () => {
               {/* Tabel riwayat pengujian oleh guru lain */}
               <DataTable>
                 <DataTable.Header>
+                  <DataTable.Title>Tanggal</DataTable.Title>
                   <DataTable.Title>Dewan Guru</DataTable.Title>
-                  <DataTable.Title>Penilaian</DataTable.Title>
-                  <DataTable.Title>Kekurangan</DataTable.Title>
                   <DataTable.Title>Catatan Penguji</DataTable.Title>
+                  <DataTable.Title>Durasi Penilaian</DataTable.Title>
                 </DataTable.Header>
 
                 {selectedPesertaKertosono[activePenilaian].akademik.map((item) => (
                   <DataTable.Row key={item.id}>
+                    <DataTable.Cell>{item.created_at}</DataTable.Cell>
                     <DataTable.Cell>{item.guru_nama}</DataTable.Cell>
-                    <DataTable.Cell>{item.penilaian}</DataTable.Cell>
-                    <DataTable.Cell>{[...item.kekurangan_tajwid, ...item.kekurangan_khusus, ...item.kekurangan_keserasian, ...item.kekurangan_kelancaran].join(', ')}</DataTable.Cell>
                     <DataTable.Cell>{item.catatan}</DataTable.Cell>
+                    <DataTable.Cell>{item.durasi_penilaian}</DataTable.Cell>
                   </DataTable.Row>
                 ))}
               </DataTable>
@@ -475,15 +511,36 @@ const FormPenilaianAkademikKertosono = ({
         try {
           // Call the API to store the form data
           setLoading(true);
-          const formValueToStore = formValues[activePenilaian];
+          
+          const akhirPenilaian = Date.now(); // Current timestamp
+          const awalPenilaian = formValues[activePenilaian]?.awal_penilaian || akhirPenilaian;
+
+          // Calculate durasi_penilaian in minutes and round
+          const durasiPenilaianMinutes = formValues[activePenilaian]?.durasi_penilaian ? formValues[activePenilaian]?.durasi_penilaian : Math.round((akhirPenilaian - awalPenilaian) / 60000);
+
+          // Update the active form values with `akhir_penilaian` and `durasi_penilaian`
+          const updatedFormValues = {
+            ...formValues[activePenilaian],
+            akhir_penilaian: akhirPenilaian,
+            durasi_penilaian: durasiPenilaianMinutes,
+          };
+
+          setFormValues((prevValues) => {
+            const newValues = [...prevValues];
+            newValues[activePenilaian] = updatedFormValues;
+            return newValues;
+          });
+
+          // Store the updated form values via API
           const storedForm = await storeAkademikKertosono(
-            formValueToStore.peserta_kertosono_id,
-            formValueToStore.penilaian,
-            formValueToStore.kekurangan_tajwid,
-            formValueToStore.kekurangan_khusus,
-            formValueToStore.kekurangan_keserasian,
-            formValueToStore.kekurangan_kelancaran,
-            formValueToStore.catatan
+            updatedFormValues.peserta_kertosono_id,
+            updatedFormValues.penilaian,
+            updatedFormValues.penilaian == "Lulus" ? null : updatedFormValues.kekurangan_tajwid,
+            updatedFormValues.penilaian == "Lulus" ? null : updatedFormValues.kekurangan_khusus,
+            updatedFormValues.penilaian == "Lulus" ? null : updatedFormValues.kekurangan_keserasian,
+            updatedFormValues.penilaian == "Lulus" ? null : updatedFormValues.kekurangan_kelancaran,
+            updatedFormValues.catatan,
+            updatedFormValues.durasi_penilaian
           );
 
           newSnackbar(storedForm.message);
@@ -562,11 +619,16 @@ const FormPenilaianAkademikKertosono = ({
             {values.penilaian === "Tidak Lulus" && (
               <View>
                 <View style={styles.inputGroup}>
-                  <Text variant="titleSmall">Kekurangan Tajwid</Text>
-                  <SegmentedButtons
-                    value={values.kekurangan_tajwid}
-                    multiSelect
-                    onValueChange={(value) => {
+                  <CheckboxGroup
+                    label="Kekurangan Tajwid"
+                    options={[
+                      { value: "Dengung", label: "Dengung" },
+                      { value: "Mad", label: "Mad" },
+                      { value: "Makhraj", label: "Makhraj" },
+                      { value: "Tafkhim-Tarqiq", label: "Tafkhim-Tarqiq" },
+                    ]}
+                    values={values.kekurangan_tajwid}
+                    onChange={(value) => {
                       setFieldValue("kekurangan_tajwid", value);
                       setFormValues((prevValues) => {
                         const updatedValues = [...prevValues];
@@ -577,36 +639,19 @@ const FormPenilaianAkademikKertosono = ({
                         return updatedValues;
                       });
                     }}
-                    buttons={[
-                      {
-                        value: 'Dengung',
-                        label: 'Dengung',
-                        showSelectedCheck: true
-                      },
-                      {
-                        value: 'Mad',
-                        label: 'Mad',
-                        showSelectedCheck: true
-                      },
-                      {
-                        value: 'Makhraj',
-                        label: 'Makhraj',
-                        showSelectedCheck: true
-                      },
-                      {
-                        value: 'Tafkhim-Tarqiq',
-                        label: 'Tafkhim-Tarqiq',
-                        showSelectedCheck: true
-                      },
-                    ]}
                   />
                 </View>
+
                 <View style={styles.inputGroup}>
-                  <Text variant="titleSmall">Kekurangan Khusus</Text>
-                  <SegmentedButtons
-                    value={values.kekurangan_khusus}
-                    multiSelect
-                    onValueChange={(value) => {
+                  <CheckboxGroup
+                    label="Kekurangan Khusus"
+                    options={[
+                      { value: "Harakat", label: "Harakat" },
+                      { value: "Lafadz", label: "Lafadz" },
+                      { value: "Lam Jalalah", label: "Lam Jalalah" },
+                    ]}
+                    values={values.kekurangan_khusus}
+                    onChange={(value) => {
                       setFieldValue("kekurangan_khusus", value);
                       setFormValues((prevValues) => {
                         const updatedValues = [...prevValues];
@@ -617,31 +662,19 @@ const FormPenilaianAkademikKertosono = ({
                         return updatedValues;
                       });
                     }}
-                    buttons={[
-                      {
-                        value: 'Harakat',
-                        label: 'Harakat',
-                        showSelectedCheck: true
-                      },
-                      {
-                        value: 'Lafadz',
-                        label: 'Lafadz',
-                        showSelectedCheck: true
-                      },
-                      {
-                        value: 'Lam Jalalah',
-                        label: 'Lam Jalalah',
-                        showSelectedCheck: true
-                      },
-                    ]}
                   />
                 </View>
+
                 <View style={styles.inputGroup}>
-                  <Text variant="titleSmall">Kekurangan Keserasian</Text>
-                  <SegmentedButtons
-                    value={values.kekurangan_keserasian}
-                    multiSelect
-                    onValueChange={(value) => {
+                  <CheckboxGroup
+                    label="Kekurangan Keserasian"
+                    options={[
+                      { value: "Panjang Pendek", label: "Panjang Pendek" },
+                      { value: "Ikhtilash Huruf Sukun", label: "Ikhtilash Huruf Sukun" },
+                      { value: "Ikhtilash Huruf Syiddah", label: "Ikhtilash Huruf Syiddah" },
+                    ]}
+                    values={values.kekurangan_keserasian}
+                    onChange={(value) => {
                       setFieldValue("kekurangan_keserasian", value);
                       setFormValues((prevValues) => {
                         const updatedValues = [...prevValues];
@@ -652,31 +685,18 @@ const FormPenilaianAkademikKertosono = ({
                         return updatedValues;
                       });
                     }}
-                    buttons={[
-                      {
-                        value: 'Panjang Pendek',
-                        label: 'Panjang Pendek',
-                        showSelectedCheck: true
-                      },
-                      {
-                        value: 'Ikhtilash Huruf Sukun',
-                        label: 'Ikhtilash Huruf Sukun',
-                        showSelectedCheck: true
-                      },
-                      {
-                        value: 'Ikhtilash Huruf Syiddah',
-                        label: 'Ikhtilash Huruf Syiddah',
-                        showSelectedCheck: true
-                      },
-                    ]}
                   />
                 </View>
+
                 <View style={styles.inputGroup}>
-                  <Text variant="titleSmall">Kekurangan Kelancaran</Text>
-                  <SegmentedButtons
-                    value={values.kekurangan_kelancaran}
-                    multiSelect
-                    onValueChange={(value) => {
+                  <CheckboxGroup
+                    label="Kekurangan Kelancaran"
+                    options={[
+                      { value: "Kecepatan", label: "Kecepatan" },
+                      { value: "Ketartilan", label: "Ketartilan" },
+                    ]}
+                    values={values.kekurangan_kelancaran}
+                    onChange={(value) => {
                       setFieldValue("kekurangan_kelancaran", value);
                       setFormValues((prevValues) => {
                         const updatedValues = [...prevValues];
@@ -687,25 +707,14 @@ const FormPenilaianAkademikKertosono = ({
                         return updatedValues;
                       });
                     }}
-                    buttons={[
-                      {
-                        value: 'Kecepatan',
-                        label: 'Kecepatan',
-                        showSelectedCheck: true
-                      },
-                      {
-                        value: 'Ketartilan',
-                        label: 'Ketartilan',
-                        showSelectedCheck: true
-                      },
-                    ]}
                   />
                   {errors.kekurangan && (
-                     <Text style={styles.errorText}>{errors.kekurangan}</Text>
+                    <Text style={styles.errorText}>{errors.kekurangan}</Text>
                   )}
                 </View>
-              </View> 
+              </View>
             )}
+
 
             {/* Catatan Penguji TextInput */}
             <TextInput

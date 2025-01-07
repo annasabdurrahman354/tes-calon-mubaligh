@@ -21,6 +21,7 @@ import { FlatList } from "react-native-gesture-handler";
 import { PesertaKertosono } from "@/lib/types/Kertosono";
 import { debounce } from "lodash";
 import { useSnackbar } from "@/lib/services/useSnackbar";
+import { useAuth } from "@/lib/services/useAuth";
 
 const Search = () => {
   const theme = useTheme();
@@ -206,6 +207,7 @@ const ParticipantCard = ({
   onPress: () => void;
 }) => {
   const theme = useTheme();
+  const { user } = useAuth();
 
   return (
     <Card
@@ -217,8 +219,8 @@ const ParticipantCard = ({
           ? theme.colors.elevation.level3
           : theme.colors.background,
       }}
-      onPress={!telahDisimak ? onPress : () => {}}
-      disabled={telahDisimak}
+      onPress={onPress}
+      
     >
       <Card.Content
         style={{
@@ -280,7 +282,10 @@ const ParticipantCard = ({
               </Text>
             )}
           </View>
-          <Text variant="titleSmall">bin {peserta.nama_ayah}</Text>
+          {peserta.jenis_kelamin == "Laki-laki" ?
+            <Text variant="titleSmall">bin {peserta.nama_ayah}</Text> :
+            <Text variant="titleSmall">binti {peserta.nama_ayah}</Text>
+          }
           <Divider bold style={{ marginVertical: 1 }} />
 
           <View>
@@ -318,14 +323,14 @@ const ParticipantCard = ({
               }}
             >
               <Chip
-                icon="check"
+                icon={peserta.akademik.find(akademik => akademik.guru_id == user?.id)?.penilaian == "Lulus" ? "check" : 'cancel'}
                 style={{
                   minWidth: "auto",
                   alignSelf: "center",
                   paddingHorizontal: 8,
                 }}
               >
-                Telah Disimak
+                Nilai Anda: { peserta.akademik.find(akademik => akademik.guru_id == user?.id)?.penilaian }
               </Chip>
             </View>
           )}

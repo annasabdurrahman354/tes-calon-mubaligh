@@ -21,6 +21,7 @@ import {
 import { Setting, StackHeader, Themes } from "@/lib";
 import { useAuth } from "@/lib/services/useAuth";
 import { useSnackbar } from "@/lib/services/useSnackbar";
+import { RESET } from "jotai/utils";
 
 // Catch any errors thrown by the Layout component.
 export { ErrorBoundary } from "expo-router";
@@ -66,6 +67,13 @@ const RootLayout = () => {
 
 const RootLayoutNav = () => {
   const { hideSnacbar, snackbarMessage, snackbarVisibility } = useSnackbar();
+  const {setSession} = useAuth();
+
+  React.useEffect(() => {
+    if(snackbarMessage == "Sesi Anda telah berakhir. Silakan login kembali.")
+      setSession(RESET)
+  }, [snackbarMessage]);
+
   const [settings, setSettings] = React.useState<Setting>({
     theme: "light", // Changed default theme to 'light'
     color: "green",

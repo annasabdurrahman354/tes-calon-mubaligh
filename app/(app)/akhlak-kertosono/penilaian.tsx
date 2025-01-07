@@ -53,9 +53,10 @@ const Penilaian = () => {
                 >
                   {pilihPesertaKertosono?.nama}
                 </Text>
-                <Text variant="titleSmall">
-                  bin {pilihPesertaKertosono?.nama_ayah}
-                </Text>
+                {pilihPesertaKertosono?.jenis_kelamin == "Laki-laki" ?
+                  <Text variant="titleSmall">bin {pilihPesertaKertosono?.nama_ayah}</Text> :
+                  <Text variant="titleSmall">binti {pilihPesertaKertosono?.nama_ayah}</Text>
+                }
               </View>
             </View>
             <View

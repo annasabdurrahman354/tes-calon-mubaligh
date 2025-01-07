@@ -39,9 +39,10 @@ const Detail = () => {
                 >
                   {pilihPesertaKertosono?.nama}
                 </Text>
-                <Text variant="titleSmall">
-                  bin {pilihPesertaKertosono?.nama_ayah}
-                </Text>
+                {pilihPesertaKertosono?.jenis_kelamin == "Laki-laki" ?
+                  <Text variant="titleSmall">bin {pilihPesertaKertosono?.nama_ayah}</Text> :
+                  <Text variant="titleSmall">binti {pilihPesertaKertosono?.nama_ayah}</Text>
+                }
               </View>
             </View>
             <View
@@ -119,18 +120,18 @@ const Detail = () => {
               {/* Tabel riwayat pengujian oleh guru lain */}
               <DataTable>
                 <DataTable.Header>
+                  <DataTable.Title>Tanggal</DataTable.Title>
                   <DataTable.Title>Dewan Guru</DataTable.Title>
-                  <DataTable.Title>Penilaian</DataTable.Title>
-                  <DataTable.Title>Kekurangan</DataTable.Title>
                   <DataTable.Title>Catatan</DataTable.Title>
+                  <DataTable.Title>Durasi Penilaian</DataTable.Title>
                 </DataTable.Header>
 
                 {pilihPesertaKertosono?.akademik.map((item) => (
                   <DataTable.Row key={item.id}>
+                    <DataTable.Cell>{item.created_at}</DataTable.Cell>
                     <DataTable.Cell>{item.guru_nama}</DataTable.Cell>
-                    <DataTable.Cell>{item.penilaian}</DataTable.Cell>
-                    <DataTable.Cell>{[...item.kekurangan_tajwid, ...item.kekurangan_khusus, ...item.kekurangan_keserasian, ...item.kekurangan_kelancaran].join(', ')}</DataTable.Cell>
                     <DataTable.Cell>{item.catatan}</DataTable.Cell>
+                    <DataTable.Cell>{item.durasi_penilaian}</DataTable.Cell>
                   </DataTable.Row>
                 ))}
               </DataTable>

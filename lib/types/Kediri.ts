@@ -15,7 +15,6 @@ export type AkademikKediri = {
   nilai_keterangan: number;
   nilai_penjelasan: number;
   nilai_pemahaman: number;
-  rata_rata: number;
   catatan: string | null;
   created_at: string | null;
 }
@@ -41,6 +40,7 @@ export type PesertaKediri = {
   siswa_id: string;
   nama: string;
   nama_panggilan: string;
+  jenis_kelamin: string;
   kelompok: string;
   nomor_cocard: number;
   nis: string;
@@ -54,9 +54,13 @@ export type PesertaKediri = {
   umur: number;
   nama_ayah: string;
   riwayat_tes: number;
-  count_akademik_lulus: number;
-  count_akademik_tidak_lulus: number;
+  jumlah_penyimakan: number;
   total_poin_akhlak: number;
+  avg_nilai_makna: number;
+  avg_nilai_keterangan: number;
+  avg_nilai_penjelasan: number;
+  avg_nilai_pemahaman: number;
+  avg_nilai: number;
   hasil_sistem: number;
   telah_disimak: boolean;
   foto_smartcard: string;
