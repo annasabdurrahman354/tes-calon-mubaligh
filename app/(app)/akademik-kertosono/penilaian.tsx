@@ -27,6 +27,7 @@ import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from "@gorhom/
 import {CreditCardIcon} from "react-native-heroicons/outline";
 import { useAuth } from "@/lib/services/useAuth";
 import CheckboxGroup from "@/lib/components/CheckboxGroup";
+import AkademikKertosonoCard from "@/lib/components/AkademikKertosonoCard";
 
 const Penilaian = () => {
   const theme = useTheme();
@@ -252,7 +253,7 @@ const Penilaian = () => {
         />
       </View>
 
-      <ScrollView>
+      <ScrollView style={{ paddingBottom: 16 }}>
         <Card style={{ margin: 16 }} mode="outlined">
           <Card.Content>
             <View style={styles.header}>
@@ -330,7 +331,7 @@ const Penilaian = () => {
             },
             {
               value: "riwayat",
-              label: "Riwayat Penyimak",
+              label: "Riwayat Penyimakan",
             },
           ]}
         />
@@ -345,31 +346,11 @@ const Penilaian = () => {
             removePeserta={handleRemovePeserta}
           />
         ) : (
-          <Card
-            style={{ marginHorizontal: 16, marginBottom: 16 }}
-            mode="outlined"
-          >
-            <Card.Content>
-              {/* Tabel riwayat pengujian oleh guru lain */}
-              <DataTable>
-                <DataTable.Header>
-                  <DataTable.Title>Tanggal</DataTable.Title>
-                  <DataTable.Title>Dewan Guru</DataTable.Title>
-                  <DataTable.Title>Catatan Penguji</DataTable.Title>
-                  <DataTable.Title>Durasi Penilaian</DataTable.Title>
-                </DataTable.Header>
-
-                {selectedPesertaKertosono[activePenilaian].akademik.map((item) => (
-                  <DataTable.Row key={item.id}>
-                    <DataTable.Cell>{item.created_at}</DataTable.Cell>
-                    <DataTable.Cell>{item.guru_nama}</DataTable.Cell>
-                    <DataTable.Cell>{item.catatan}</DataTable.Cell>
-                    <DataTable.Cell>{item.durasi_penilaian}</DataTable.Cell>
-                  </DataTable.Row>
+            <View style={{gap: 12, marginHorizontal:16, flexDirection: 'column'}}>
+                {selectedPesertaKertosono[activePenilaian]?.akademik.map((item) => (
+                    <AkademikKertosonoCard key={item.id} data={item} />
                 ))}
-              </DataTable>
-            </Card.Content>
-          </Card>
+            </View>
         )}
       </ScrollView>
       <BottomSheetModal

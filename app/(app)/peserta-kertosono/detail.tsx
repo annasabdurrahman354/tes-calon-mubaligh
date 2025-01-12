@@ -9,9 +9,10 @@ import {
 } from "react-native-paper";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { SegmentedButtons } from "react-native-paper";
-import { DataTable } from "react-native-paper";
 import { useKertosono } from "@/lib/services/useKertosono";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import AkhlakCard from "@/lib/components/AkhlakCard";
+import AkademikKertosonoCard from "@/lib/components/AkademikKertosonoCard";
 
 const Detail = () => {
   const theme = useTheme();
@@ -20,7 +21,7 @@ const Detail = () => {
 
   return (
     <Surface style={{ flex: 1 }}>
-      <ScrollView>
+      <ScrollView style={{ paddingBottom: 16 }}>
         <Card style={{ margin: 16 }} mode="outlined">
           <Card.Content>
             <View style={styles.header}>
@@ -112,55 +113,17 @@ const Detail = () => {
           ]}
         />
         {tab === "akademik" ? (
-          <Card
-            style={{ marginHorizontal: 16, marginBottom: 16 }}
-            mode="outlined"
-          >
-            <Card.Content>
-              {/* Tabel riwayat pengujian oleh guru lain */}
-              <DataTable>
-                <DataTable.Header>
-                  <DataTable.Title>Tanggal</DataTable.Title>
-                  <DataTable.Title>Dewan Guru</DataTable.Title>
-                  <DataTable.Title>Catatan</DataTable.Title>
-                  <DataTable.Title>Durasi Penilaian</DataTable.Title>
-                </DataTable.Header>
-
-                {pilihPesertaKertosono?.akademik.map((item) => (
-                  <DataTable.Row key={item.id}>
-                    <DataTable.Cell>{item.created_at}</DataTable.Cell>
-                    <DataTable.Cell>{item.guru_nama}</DataTable.Cell>
-                    <DataTable.Cell>{item.catatan}</DataTable.Cell>
-                    <DataTable.Cell>{item.durasi_penilaian}</DataTable.Cell>
-                  </DataTable.Row>
-                ))}
-              </DataTable>
-            </Card.Content>
-          </Card>
+            <View style={{gap: 12, marginHorizontal:16, flexDirection: 'column'}}>
+              {pilihPesertaKertosono?.akademik.map((item) => (
+                  <AkademikKertosonoCard key={item.id} data={item} />
+              ))}
+            </View>
         ) : (
-          <Card
-            style={{ marginHorizontal: 16, marginBottom: 16 }}
-            mode="outlined"
-          >
-            <Card.Content>
-              {/* Tabel riwayat poin akhlak */}
-              <DataTable>
-                <DataTable.Header>
-                  <DataTable.Title numberOfLines={2}>Pengirim</DataTable.Title>
-                  <DataTable.Title numberOfLines={2}>Catatan</DataTable.Title>
-                  <DataTable.Title numeric>Poin</DataTable.Title>
-                </DataTable.Header>
-
-                {pilihPesertaKertosono?.akhlak.map((item) => (
-                  <DataTable.Row key={item.id}>
-                    <DataTable.Cell>{item.guru_nama}</DataTable.Cell>
-                    <DataTable.Cell>{item.catatan}</DataTable.Cell>
-                    <DataTable.Cell numeric>{item.poin}</DataTable.Cell>
-                  </DataTable.Row>
-                ))}
-              </DataTable>
-            </Card.Content>
-          </Card>
+            <View style={{gap: 12, marginHorizontal:16, flexDirection: 'column'}}>
+              {pilihPesertaKertosono?.akhlak.map((item) => (
+                  <AkhlakCard key={item.id} data={item} />
+              ))}
+            </View>
         )}
       </ScrollView>
     </Surface>

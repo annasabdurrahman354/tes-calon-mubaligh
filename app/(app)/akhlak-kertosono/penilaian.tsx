@@ -20,6 +20,7 @@ import { useKertosono } from "@/lib/services/useKertosono";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { useSnackbar } from "@/lib/services/useSnackbar";
 import { router } from "expo-router";
+import AkhlakCard from "@/lib/components/AkhlakCard";
 
 const Penilaian = () => {
   const theme = useTheme();
@@ -34,7 +35,7 @@ const Penilaian = () => {
 
   return (
     <Surface style={{ flex: 1 }}>
-      <ScrollView>
+      <ScrollView style={{ paddingBottom: 16 }}>
         <Card style={{ margin: 16 }} mode="outlined">
           <Card.Content>
             <View style={styles.header}>
@@ -136,29 +137,11 @@ const Penilaian = () => {
             setPilihPesertaKertosono={setPilihPesertaKertosono}
           />
         ) : (
-          <Card
-            style={{ marginHorizontal: 16, marginBottom: 16 }}
-            mode="outlined"
-          >
-            <Card.Content>
-              {/* Tabel riwayat poin akhlak */}
-              <DataTable>
-                <DataTable.Header>
-                  <DataTable.Title numberOfLines={2}>Pengirim</DataTable.Title>
-                  <DataTable.Title numberOfLines={2}>Catatan</DataTable.Title>
-                  <DataTable.Title numeric>Poin</DataTable.Title>
-                </DataTable.Header>
-
-                {pilihPesertaKertosono?.akhlak.map((item) => (
-                  <DataTable.Row key={item.id}>
-                    <DataTable.Cell>{item.guru_nama}</DataTable.Cell>
-                    <DataTable.Cell>{item.catatan}</DataTable.Cell>
-                    <DataTable.Cell numeric>{item.poin}</DataTable.Cell>
-                  </DataTable.Row>
-                ))}
-              </DataTable>
-            </Card.Content>
-          </Card>
+            <View style={{gap: 12, marginHorizontal:16, flexDirection: 'column'}}>
+              {pilihPesertaKertosono?.akhlak.map((item) => (
+                  <AkhlakCard key={item.id} data={item} />
+              ))}
+            </View>
         )}
       </ScrollView>
     </Surface>

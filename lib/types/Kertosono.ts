@@ -2,6 +2,7 @@ export type AkhlakKertosono = {
   id: string;
   guru_id: string;
   guru_nama: string;
+  guru_foto: string;
   poin: number;
   catatan: string;
   created_at: string | null;
@@ -11,6 +12,7 @@ export type AkademikKertosono = {
   id: string;
   guru_id: string;
   guru_nama: string;
+  guru_foto: string;
   penilaian: string;
   kekurangan_tajwid: string[];
   kekurangan_khusus: string[];

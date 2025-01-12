@@ -12,6 +12,9 @@ import { SegmentedButtons } from "react-native-paper";
 import { DataTable } from "react-native-paper";
 import { useKediri } from "@/lib/services/useKediri";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import AkademikKediriCard from "@/lib/components/AkademikKediriCard";
+import AkhlakCard from "@/lib/components/AkhlakCard";
+import AkademikKertosonoCard from "@/lib/components/AkademikKertosonoCard";
 
 const Detail = () => {
   const theme = useTheme();
@@ -113,55 +116,17 @@ const Detail = () => {
           ]}
         />
         {tab === "akademik" ? (
-          <Card
-            style={{ marginHorizontal: 16, marginBottom: 16 }}
-            mode="outlined"
-          >
-            <Card.Content>
-              {/* Tabel riwayat pengujian oleh guru lain */}
-              <DataTable>
-                <DataTable.Header>
-                  <DataTable.Title>Dewan Guru</DataTable.Title>
-                  <DataTable.Title>Nilai Rata-Rata</DataTable.Title>
-                  <DataTable.Title>Catatan Penguji</DataTable.Title>
-                  <DataTable.Title>Status</DataTable.Title>
-                </DataTable.Header>
-
-                {pilihPesertaKediri?.akademik.map((item) => (
-                  <DataTable.Row key={item.id}>
-                    <DataTable.Cell>{item.guru_nama}</DataTable.Cell>
-                    <DataTable.Cell>{item.rata_rata}</DataTable.Cell>
-                    <DataTable.Cell>{item.catatan}</DataTable.Cell>
-                    <DataTable.Cell>{item.status_lulus}</DataTable.Cell>
-                  </DataTable.Row>
-                ))}
-              </DataTable>
-            </Card.Content>
-          </Card>
+            <View style={{gap: 12, marginHorizontal:16, flexDirection: 'column'}}>
+              {pilihPesertaKediri?.akademik.map((item) => (
+                  <AkademikKediriCard key={item.id} data={item} />
+              ))}
+            </View>
         ) : (
-          <Card
-            style={{ marginHorizontal: 16, marginBottom: 16 }}
-            mode="outlined"
-          >
-            <Card.Content>
-              {/* Tabel riwayat poin akhlak */}
-              <DataTable>
-                <DataTable.Header>
-                  <DataTable.Title numberOfLines={2}>Pengirim</DataTable.Title>
-                  <DataTable.Title numberOfLines={2}>Catatan</DataTable.Title>
-                  <DataTable.Title numeric>Poin</DataTable.Title>
-                </DataTable.Header>
-
-                {pilihPesertaKediri?.akhlak.map((item) => (
-                  <DataTable.Row key={item.id}>
-                    <DataTable.Cell>{item.guru_nama}</DataTable.Cell>
-                    <DataTable.Cell>{item.catatan}</DataTable.Cell>
-                    <DataTable.Cell numeric>{item.poin}</DataTable.Cell>
-                  </DataTable.Row>
-                ))}
-              </DataTable>
-            </Card.Content>
-          </Card>
+            <View style={{gap: 12, marginHorizontal:16, flexDirection: 'column'}}>
+              {pilihPesertaKediri?.akhlak.map((item) => (
+                  <AkhlakCard key={item.id} data={item} />
+              ))}
+            </View>
         )}
       </ScrollView>
     </Surface>

@@ -2,6 +2,7 @@ export type AkhlakKediri = {
   id: string;
   guru_id: string;
   guru_nama: string;
+  guru_foto: string;
   catatan: string;
   poin: number;
   created_at: string | null;
@@ -11,6 +12,7 @@ export type AkademikKediri = {
   id: string;
   guru_id: string;
   guru_nama: string;
+  guru_foto: string;
   nilai_makna: number;
   nilai_keterangan: number;
   nilai_penjelasan: number;
