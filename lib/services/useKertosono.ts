@@ -1,13 +1,14 @@
 import { useAtom } from "jotai";
 import { AkademikKertosonoForm, AkhlakKertosonoForm, PesertaKertosono } from "../types/Kertosono";
 import api, { handleApiError } from "./api";
-import { pilihPesertaKertosonoAtom, selectedPesertaKertosonoAtom } from "../atoms/selectedPesertaAtom";
+import { formValuesAtom, pilihPesertaKertosonoAtom, selectedPesertaKertosonoAtom } from "../atoms/selectedPesertaAtom";
 import { pesertaKertosonoAtom } from "../atoms/pesertaAtom";
 
 export function useKertosono() {
     const [pesertaKertosono, setPesertaKertosono] = useAtom(pesertaKertosonoAtom);
     const [selectedPesertaKertosono, setSelectedPesertaKertosono] = useAtom(selectedPesertaKertosonoAtom);
     const [pilihPesertaKertosono, setPilihPesertaKertosono] = useAtom(pilihPesertaKertosonoAtom);
+    const [formValues, setFormValues] = useAtom(formValuesAtom);
 
     const getPesertaKertosono = async (
       jenis_kelamin?: string,
@@ -138,6 +139,6 @@ export function useKertosono() {
       return selectedPesertaKertosono?.some((item) => item.id === id);
     };
   
-    return { pesertaKertosono, getPesertaKertosono, getPesertaKertosonoByNfc, storeAkademikKertosono, storeAkhlakKertosono, selectedPesertaKertosono, addSelectedPesertaKertosono, removeSelectedPesertaKertosono, clearSelectedPesertaKertosono, toggleSelectedPesertaKertosono, isSelectedPesertaKertosono, pilihPesertaKertosono, setPilihPesertaKertosono};
+    return { pesertaKertosono, getPesertaKertosono, getPesertaKertosonoByNfc, storeAkademikKertosono, storeAkhlakKertosono, selectedPesertaKertosono, addSelectedPesertaKertosono, removeSelectedPesertaKertosono, clearSelectedPesertaKertosono, toggleSelectedPesertaKertosono, isSelectedPesertaKertosono, pilihPesertaKertosono, setPilihPesertaKertosono, formValues, setFormValues};
   }
   

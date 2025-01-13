@@ -9,12 +9,10 @@ import {
 } from "react-native-paper";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { SegmentedButtons } from "react-native-paper";
-import { DataTable } from "react-native-paper";
 import { useKediri } from "@/lib/services/useKediri";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import AkademikKediriCard from "@/lib/components/AkademikKediriCard";
 import AkhlakCard from "@/lib/components/AkhlakCard";
-import AkademikKertosonoCard from "@/lib/components/AkademikKertosonoCard";
 
 const Detail = () => {
   const theme = useTheme();

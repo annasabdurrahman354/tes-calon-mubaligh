@@ -15,7 +15,6 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import * as Yup from "yup";
 import { Formik } from "formik";
 import { SegmentedButtons } from "react-native-paper";
-import { DataTable } from "react-native-paper";
 import { useKertosono } from "@/lib/services/useKertosono";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { useSnackbar } from "@/lib/services/useSnackbar";

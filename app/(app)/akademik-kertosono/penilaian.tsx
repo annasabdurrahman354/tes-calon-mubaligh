@@ -18,7 +18,6 @@ import * as Yup from "yup";
 import RNBounceable from "@freakycoder/react-native-bounceable";
 import { Formik } from "formik";
 import { SegmentedButtons } from "react-native-paper";
-import { DataTable } from "react-native-paper";
 import { useKertosono } from "@/lib/services/useKertosono";
 import { router } from "expo-router";
 import { useSnackbar } from "@/lib/services/useSnackbar";
@@ -33,7 +32,6 @@ const Penilaian = () => {
   const theme = useTheme();
   const [tab, setTab] = useState("penilaian");
   const [loading, setLoading] = useState(false);
-  const [formValues, setFormValues] = useState([]);
   const [activePenilaian, setActivePenilaian] = useState(0);
   const [nfcId, setNfcId] = useState("");
   const [useSmartcard, setUseSmartCard] = useState(false);
@@ -48,8 +46,17 @@ const Penilaian = () => {
     selectedPesertaKertosono,
     removeSelectedPesertaKertosono,
     getPesertaKertosonoByNfc,
-    addSelectedPesertaKertosono
+    addSelectedPesertaKertosono,
+    formValues,
+    setFormValues
   } = useKertosono();
+
+  // Prevent rendering until selectedPesertaKertosono is valid
+  if (!selectedPesertaKertosono || selectedPesertaKertosono.length === 0) {
+    router.replace("/(app)/akademik-kertosono"); // Redirect to home
+    
+    return null; // Optionally render a loading spinner or blank state
+  }
 
   const onGetPesertaKertosonoByNfc = async (nfc: string) => {
     setLoading(true);
@@ -84,6 +91,9 @@ const Penilaian = () => {
   };
 
   useEffect(() => {
+    if (!selectedPesertaKertosono || selectedPesertaKertosono.length === 0) {
+      router.replace("/(app)/akademik-kertosono"); // Redirect to home
+    }
     const updatedFormValues = selectedPesertaKertosono.map((peserta) => {
       const existingForm = formValues.find(
         (form) => form.peserta_kertosono_id === peserta.id

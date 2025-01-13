@@ -267,7 +267,7 @@ const ParticipantCard = ({
             <Text variant="titleMedium" style={{ fontWeight: "bold" }}>
               {peserta.nama}
             </Text>
-            {peserta.count_akademik_lulus + peserta.count_akademik_tidak_lulus >
+            {peserta.jumlah_penyimakan >
               0 && (
               <Text
                 style={{
@@ -277,8 +277,7 @@ const ParticipantCard = ({
                   backgroundColor: theme.colors.error,
                 }}
               >
-                {peserta.count_akademik_lulus +
-                  peserta.count_akademik_tidak_lulus}
+                {peserta.jumlah_penyimakan}
               </Text>
             )}
           </View>

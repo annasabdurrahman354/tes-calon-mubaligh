@@ -6,4 +6,4 @@ export const selectedPesertaKediriAtom = atom<PesertaKediri[]>([]);
 export const selectedPesertaKertosonoAtom = atom<PesertaKertosono[]>([]);
 export const pilihPesertaKediriAtom = atom<PesertaKediri | null>(null);
 export const pilihPesertaKertosonoAtom = atom<PesertaKertosono | null>(null);
-
+export const formValuesAtom = atom([]);
