@@ -49,6 +49,7 @@ const TabsHome = () => {
             padding: 16,
             width: "100%",
             gap: 16,
+            marginBottom: 48
           }}
         >
           <View
@@ -209,7 +210,6 @@ const TabsHome = () => {
           {(hasRole(ROLE.GURU_KEDIRI) || hasRole(ROLE.ADMIN_KEDIRI) || hasRole(ROLE.SUPERADMIN)) &&
             <View
               style={{
-                paddingBottom: 16,
                 gap: 16,
                 flex: 1,
                 width: "100%",
@@ -290,6 +290,14 @@ const TabsHome = () => {
                   iconShadowColor="#E5FCD9"
                   iconBackgroundColor="#3FD13F"
                   onClick={() => router.push("/(app)/akhlak-kertosono")}
+                />
+                 <MainMenu
+                  title="Daftar Anda Simak"
+                  cardBackgroundColor={theme.colors.background}
+                  icon={HeroIcons.UserGroupIcon}
+                  iconShadowColor="#E5FCD9"
+                  iconBackgroundColor="#3FD13F"
+                  onClick={() => router.push("/(app)/peserta-kertosono/auth-simak")}
                 />
                </>
               }

@@ -32,6 +32,29 @@ export function useKertosono() {
         handleApiError(err);
       }
     };
+
+    const getAuthSimak = async (
+      jenis_kelamin?: string,
+      namaOrCocard?: string
+    ): Promise<PesertaKertosono[] | null | any> => {
+      try {
+        const params: Record<string, string> = {};
+    
+        if (jenis_kelamin && jenis_kelamin !== '-') {
+          params['filter[siswa.jenis_kelamin]'] = jenis_kelamin;
+        }
+        if (namaOrCocard) {
+          params['filter[namaOrCocard]'] = namaOrCocard;
+        }
+    
+        const response = await api.get('peserta-kertosono/getAuthSimak', { params });
+        setPesertaKertosono(response.data);
+    
+        return response.data;
+      } catch (err) {
+        handleApiError(err);
+      }
+    };
     
     const getPesertaKertosonoByNfc = async (nfc: string): Promise<PesertaKertosono | null | any> => {
       try {
@@ -139,6 +162,6 @@ export function useKertosono() {
       return selectedPesertaKertosono?.some((item) => item.id === id);
     };
   
-    return { pesertaKertosono, getPesertaKertosono, getPesertaKertosonoByNfc, storeAkademikKertosono, storeAkhlakKertosono, selectedPesertaKertosono, addSelectedPesertaKertosono, removeSelectedPesertaKertosono, clearSelectedPesertaKertosono, toggleSelectedPesertaKertosono, isSelectedPesertaKertosono, pilihPesertaKertosono, setPilihPesertaKertosono, formValues, setFormValues};
+    return { pesertaKertosono, getPesertaKertosono, getAuthSimak, getPesertaKertosonoByNfc, storeAkademikKertosono, storeAkhlakKertosono, selectedPesertaKertosono, addSelectedPesertaKertosono, removeSelectedPesertaKertosono, clearSelectedPesertaKertosono, toggleSelectedPesertaKertosono, isSelectedPesertaKertosono, pilihPesertaKertosono, setPilihPesertaKertosono, formValues, setFormValues};
   }
   
