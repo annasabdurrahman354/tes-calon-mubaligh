@@ -210,7 +210,7 @@ const Penilaian = () => {
           mode="contained"
           iconColor={theme.colors.primary}
           size={24}
-          onPress={() => handlePresentModalPress()}
+          onPress={() => router.back()}
         />
       </View>
 
