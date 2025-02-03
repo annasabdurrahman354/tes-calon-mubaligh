@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Avatar,
@@ -12,7 +12,7 @@ import {
   TextInput,
   useTheme,
 } from "react-native-paper";
-import { Platform, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { Image } from "expo-image";
 import * as Yup from "yup";
 import RNBounceable from "@freakycoder/react-native-bounceable";
@@ -22,31 +22,22 @@ import { useKertosono } from "@/lib/services/useKertosono";
 import { router } from "expo-router";
 import { useSnackbar } from "@/lib/services/useSnackbar";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
-import {CreditCardIcon} from "react-native-heroicons/outline";
 import { useAuth } from "@/lib/services/useAuth";
 import CheckboxGroup from "@/lib/components/CheckboxGroup";
 import AkademikKertosonoCard from "@/lib/components/AkademikKertosonoCard";
+import {getFirstValidWord} from "@/lib/types/Kertosono";
 
 const Penilaian = () => {
   const theme = useTheme();
   const [tab, setTab] = useState("penilaian");
   const [loading, setLoading] = useState(false);
   const [activePenilaian, setActivePenilaian] = useState(0);
-  const [nfcId, setNfcId] = useState("");
-  const [useSmartcard, setUseSmartCard] = useState(false);
-  const [smartCardMessage, setSmartCardMessage] = useState("");
   const {user} = useAuth();
-
-  const inputRef = useRef(null);
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
   const {
     storeAkademikKertosono,
     selectedPesertaKertosono,
     removeSelectedPesertaKertosono,
-    getPesertaKertosonoByNfc,
-    addSelectedPesertaKertosono,
     formValues,
     setFormValues
   } = useKertosono();
@@ -58,45 +49,13 @@ const Penilaian = () => {
     return null; // Optionally render a loading spinner or blank state
   }
 
-  const onGetPesertaKertosonoByNfc = async (nfc: string) => {
-    setLoading(true);
-    if (nfcId.length != 10) {
-      console.log("Rejecy NFC ID:", nfcId); // Debugging: Log the NFC ID before processing
-      return null
-    }
-    try {
-      const peserta = await getPesertaKertosonoByNfc(nfc);
-
-      console.log(peserta)
-
-      if (peserta?.telah_disimak) {
-        setSmartCardMessage(`${peserta.nama} sudah pernah anda simak.`);
-        addSelectedPesertaKertosono(peserta);
-        setNfcId("");
-        inputRef.current?.focus();
-      } else {
-        setSmartCardMessage(`${peserta?.nama} telah ditambahkan.`);
-        addSelectedPesertaKertosono(peserta);
-        setNfcId("");
-        inputRef.current?.focus();
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        setSmartCardMessage(error.message);
-      }
-    }
-    setLoading(false);
-    setNfcId(""); // Reset NFC ID
-    inputRef.current?.focus(); // Refocus the input field
-  };
-
   useEffect(() => {
     if (!selectedPesertaKertosono || selectedPesertaKertosono.length === 0) {
       router.replace("/(app)/akademik-kertosono"); // Redirect to home
     }
     const updatedFormValues = selectedPesertaKertosono.map((peserta) => {
       const existingForm = formValues.find(
-        (form) => form.peserta_kertosono_id === peserta.id
+        (form) => form.tes_santri_id === peserta.id
       );
   
       if (peserta.telah_disimak) {
@@ -109,13 +68,14 @@ const Penilaian = () => {
           // Pre-fill the form with data from akademikEntry
           return (
             existingForm || {
-              peserta_kertosono_id: peserta.id,
+              tes_santri_id: peserta.id,
               penilaian: akademikEntry.penilaian || "",
               kekurangan_tajwid: akademikEntry.kekurangan_tajwid || [],
               kekurangan_khusus: akademikEntry.kekurangan_khusus || [],
               kekurangan_keserasian: akademikEntry.kekurangan_keserasian || [],
               kekurangan_kelancaran: akademikEntry.kekurangan_kelancaran || [],
               catatan: akademikEntry.catatan || "",
+              rekomendasi_penarikan: akademikEntry.rekomendasi_penarikan || false,
               awal_penilaian: Date.now(),
               akhir_penilaian: null,
               durasi_penilaian: akademikEntry.durasi_penilaian
@@ -127,13 +87,14 @@ const Penilaian = () => {
       // Default to existingForm or a blank form for this peserta
       return (
         existingForm || {
-          peserta_kertosono_id: peserta.id,
+          tes_santri_id: peserta.id,
           penilaian: "",
           kekurangan_tajwid: [],
           kekurangan_khusus: [],
           kekurangan_keserasian: [],
           kekurangan_kelancaran: [],
           catatan: "",
+          rekomendasi_penarikan: false,
           awal_penilaian: Date.now(),
           akhir_penilaian: null,
           durasi_penilaian: null
@@ -155,49 +116,6 @@ const Penilaian = () => {
 
     removeSelectedPesertaKertosono(pesertaToRemove);
   };
-
-  // Focus input field when the modal is presented and `useSmartcard` is true
-  useEffect(() => {
-    if (inputRef.current && useSmartcard) {
-      inputRef.current.focus();
-    }
-  }, []);
-
-  useEffect(() => {
-    if (loading) setNfcId("");
-    if (nfcId.length === 10) {
-      console.log("Auto-trigger NFC ID:", nfcId); // Debugging: Log the NFC ID before processing
-      onGetPesertaKertosonoByNfc(nfcId.trim());
-    }
-  }, [nfcId, onGetPesertaKertosonoByNfc]);
-
-  const handleScreenTouch = () => {
-    // Maintain focus on the TextInput even after screen interaction
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  };
-
-  const handlePresentModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.present();
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, []);
-
-  const handleSheetChanges = useCallback((index: number) => {
-    setNfcId("");
-    setSmartCardMessage("");
-    setUseSmartCard((prev) => !prev); // Toggle smart card usage
-    if (inputRef.current) inputRef.current.focus();
-  }, []);
-
-  const snapPoints = useMemo(() => ["30%"], []);
-
-  const renderBackdrop = useCallback(
-    (props) => <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />,
-    []
-  );
 
   return (
     <Surface style={{ flex: 1 }}>
@@ -232,7 +150,7 @@ const Penilaian = () => {
                   borderWidth: 4,
                   borderRadius: 1000,
                 }}
-                source={{uri: "https://ppwb.kita-kita.online/registrasi-tes/images/" + peserta.foto_smartcard}}
+                source={{uri: peserta.foto_smartcard}}
               />
               <Text
                 style={{
@@ -246,7 +164,7 @@ const Penilaian = () => {
                 }}
                 variant={"bodySmall"}
               >
-                {peserta.nama_panggilan} - {peserta.kelompok}
+                {getFirstValidWord(peserta.nama_lengkap)} - {peserta.kelompok}
                 {peserta.nomor_cocard}
               </Text>
             </View>
@@ -269,7 +187,7 @@ const Penilaian = () => {
             <View style={styles.header}>
               <Avatar.Image
                 size={72}
-                source={{uri: "https://ppwb.kita-kita.online/registrasi-tes/images/" + selectedPesertaKertosono[activePenilaian].foto_smartcard}}
+                source={{uri: selectedPesertaKertosono[activePenilaian].foto_smartcard}}
               />
               <View style={{ flex: 1, marginBottom: 8 }}>
                 {/* Nama peserta tes */}
@@ -280,7 +198,7 @@ const Penilaian = () => {
                     fontWeight: "bold",
                   }}
                 >
-                  {selectedPesertaKertosono[activePenilaian].nama}
+                  {selectedPesertaKertosono[activePenilaian].nama_lengkap}
                 </Text>
                 {selectedPesertaKertosono[activePenilaian].jenis_kelamin == "Laki-laki" ?
                   <Text variant="titleSmall">bin {selectedPesertaKertosono[activePenilaian].nama_ayah}</Text> :
@@ -363,88 +281,6 @@ const Penilaian = () => {
             </View>
         )}
       </ScrollView>
-      <BottomSheetModal
-          ref={bottomSheetModalRef}
-          backdropComponent={renderBackdrop}
-          index={0}
-          snapPoints={snapPoints}
-          onChange={handleSheetChanges}
-          style={{ marginHorizontal: 32, flex:1 }}
-        >
-          <BottomSheetView
-            style={{
-              flex: 1,
-              paddingHorizontal: 16,
-              paddingBottom: 16,
-              alignItems: "center",
-            }}
-          >
-            <TouchableOpacity
-              activeOpacity={1}
-              onPress={handleScreenTouch}
-              style={{ flex: 1, width: '100%', height: '100%' }}
-            >
-              <View
-                style={{
-                  alignSelf: "center",
-                  borderRadius: 32,
-                  borderWidth: 1,
-                  borderStyle: "dashed",
-                  marginHorizontal: 16,
-                  padding: 16,
-                  borderColor: theme.colors.outline,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  gap: 16,
-                  width: '100%',
-                  height: '100%',
-                }}
-              >
-                <View
-                  style={{
-                    backgroundColor: theme.colors.primary,
-                    padding: 12,
-                    borderRadius: 16,
-                  }}
-                >
-                  {loading ? (
-                    <ActivityIndicator size={40} color={theme.colors.onPrimary} />
-                  ) : (
-                    <CreditCardIcon
-                      color={theme.colors.onPrimary}
-                      size={40}
-                    />
-                  )}
-                </View>
-                <TextInput
-                  ref={inputRef}
-                  mode="flat"
-                  underlineColor="transparent"
-                  style={
-                    Platform.OS == 'web' ? {borderTopLeftRadius:20, borderTopRightRadius:20}:
-                    {position: 'absolute', bottom:0, right: 0, width: 0, height: 0, borderTopLeftRadius:20, borderTopRightRadius:20}
-                  }
-                  onChangeText={setNfcId} // Save changes to state
-                  onSubmitEditing={undefined} // Trigger alert on submission
-                  submitBehavior={"submit"}
-                  placeholder="NFC ID"
-                  showSoftInputOnFocus={false}
-                  keyboardType="numeric"
-                  caretHidden={true} // Hide cursor
-                  value={nfcId} // Controlled component tied to state
-                />
-                <Text
-                  variant="titleMedium"
-                  style={{ color: theme.colors.primary, textAlign: "center" }}
-                >
-                  {loading
-                    ? "Verifikasi Identitas Smartcard"
-                    : smartCardMessage || "Tap Smartcard untuk Menambahkan"}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          </BottomSheetView>
-        </BottomSheetModal>
     </Surface>
   );
 };
@@ -524,13 +360,14 @@ const FormPenilaianAkademikKertosono = ({
 
           // Store the updated form values via API
           const storedForm = await storeAkademikKertosono(
-            updatedFormValues.peserta_kertosono_id,
+            updatedFormValues.tes_santri_id,
             updatedFormValues.penilaian,
             updatedFormValues.penilaian == "Lulus" ? null : updatedFormValues.kekurangan_tajwid,
             updatedFormValues.penilaian == "Lulus" ? null : updatedFormValues.kekurangan_khusus,
             updatedFormValues.penilaian == "Lulus" ? null : updatedFormValues.kekurangan_keserasian,
             updatedFormValues.penilaian == "Lulus" ? null : updatedFormValues.kekurangan_kelancaran,
             updatedFormValues.catatan,
+            updatedFormValues.rekomendasi_penarikan,
             updatedFormValues.durasi_penilaian
           );
 
@@ -730,6 +567,28 @@ const FormPenilaianAkademikKertosono = ({
                 marginBottom: 16,
               }}
             />
+
+              {values.penilaian === "Lulus" && (
+                  <Checkbox.Item
+                      label="Rekomendasi Penarikan"
+                      status={values.rekomendasi_penarikan ? 'checked' : 'unchecked'}
+                      onPress={() => {
+                          const newValue = !values.rekomendasi_penarikan;
+
+                          setFieldValue("rekomendasi_penarikan", newValue);
+
+                          setFormValues((prevValues) => {
+                              const updatedValues = [...prevValues];
+                              updatedValues[activePenilaian] = {
+                                  ...updatedValues[activePenilaian],
+                                  rekomendasi_penarikan: newValue, // Fix: Use newValue instead of undefined "value"
+                              };
+                              return updatedValues;
+                          });
+                      }}
+                  />
+              )}
+
           </Card.Content>
           {loading ? (
             <Card.Actions style={{ margin: 16 }}>

@@ -27,7 +27,7 @@ const Detail = () => {
             <View style={styles.header}>
               <Avatar.Image
                 size={72}
-                source={{uri: "https://ppwb.kita-kita.online/registrasi-tes/images/" + pilihPesertaKertosono?.foto_smartcard}}
+                source={{uri: pilihPesertaKertosono?.foto_smartcard}}
               />
               <View style={{ flex: 1, marginBottom: 8 }}>
                 {/* Nama peserta tes */}
@@ -38,7 +38,7 @@ const Detail = () => {
                     fontWeight: "bold",
                   }}
                 >
-                  {pilihPesertaKertosono?.nama}
+                  {pilihPesertaKertosono?.nama_lengkap}
                 </Text>
                 {pilihPesertaKertosono?.jenis_kelamin == "Laki-laki" ?
                   <Text variant="titleSmall">bin {pilihPesertaKertosono?.nama_ayah}</Text> :

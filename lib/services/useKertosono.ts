@@ -46,8 +46,10 @@ export function useKertosono() {
         if (namaOrCocard) {
           params['filter[namaOrCocard]'] = namaOrCocard;
         }
+
+        params['filter'] = 'anda-simak';
     
-        const response = await api.get('peserta-kertosono/getAuthSimak', { params });
+        const response = await api.get('peserta-kertosono', { params });
         setPesertaKertosono(response.data);
     
         return response.data;
@@ -66,24 +68,26 @@ export function useKertosono() {
     };
     
     const storeAkademikKertosono = async (
-      peserta_kertosono_id: string,
+      tes_santri_id: string,
       penilaian: string,
       kekurangan_tajwid: string[],
       kekurangan_khusus: string[],
       kekurangan_keserasian: string[],
       kekurangan_kelancaran: string[],
       catatan: string | null,
+      rekomendasi_penarikan: boolean,
       durasi_penilaian: number
     ): Promise<AkademikKertosonoForm | null | any> => {
       try {
         const response = await api.post<AkademikKertosonoForm>('akademik-kertosono', {
-          peserta_kertosono_id,
+          tes_santri_id,
           penilaian,
           kekurangan_tajwid,
           kekurangan_khusus,
           kekurangan_keserasian,
           kekurangan_kelancaran,
           catatan,
+          rekomendasi_penarikan,
           durasi_penilaian
         });
         return response.data;
@@ -93,14 +97,12 @@ export function useKertosono() {
     };
     
     const storeAkhlakKertosono = async (
-      peserta_kertosono_id: string,
-      poin: number,
+      tes_santri_id: string,
       catatan: string
     ): Promise<AkhlakKertosonoForm | null | any> => {
       try {
         const response = await api.post<AkhlakKertosonoForm>('akhlak-kertosono', {
-          peserta_kertosono_id,
-          poin,
+          tes_santri_id,
           catatan,
         });
         return response.data;

@@ -27,7 +27,7 @@ const Penilaian = () => {
   const [loading, setLoading] = useState(false);
   const { pilihPesertaKediri, setPilihPesertaKediri, storeAkhlakKediri } = useKediri();
   const [formValues, setFormValues] = useState({
-    peserta_kediri_id: pilihPesertaKediri?.id,
+    tes_santri_id: pilihPesertaKediri?.id,
     poin: "",
     catatan: "",
   });
@@ -40,7 +40,7 @@ const Penilaian = () => {
             <View style={styles.header}>
               <Avatar.Image
                 size={72}
-                source={{uri: "https://ppwb.kita-kita.online/registrasi-tes/images/" + pilihPesertaKediri?.foto_smartcard}}
+                source={{uri: pilihPesertaKediri?.foto_smartcard}}
               />
               <View style={{ flex: 1, marginBottom: 8 }}>
                 {/* Nama peserta tes */}
@@ -191,7 +191,7 @@ const FormPenilaianAkhlakKediri = ({
           // Call the API to store the form data
           setLoading(true);
           const storedForm = await storeAkhlakKediri(
-            formValues.peserta_kediri_id,
+            formValues.tes_santri_id,
             formValues.poin,
             formValues.catatan
           );

@@ -27,7 +27,7 @@ const Penilaian = () => {
   const [loading, setLoading] = useState(false);
   const { pilihPesertaKertosono, setPilihPesertaKertosono, storeAkhlakKertosono } = useKertosono();
   const [formValues, setFormValues] = useState({
-    peserta_kertosono_id: pilihPesertaKertosono?.id,
+    tes_santri_id: pilihPesertaKertosono?.id,
     poin: "",
     catatan: "",
   });
@@ -40,7 +40,7 @@ const Penilaian = () => {
             <View style={styles.header}>
               <Avatar.Image
                 size={72}
-                source={{uri: "https://ppwb.kita-kita.online/registrasi-tes/images/" + pilihPesertaKertosono?.foto_smartcard}}
+                source={{uri: pilihPesertaKertosono?.foto_smartcard}}
               />
               <View style={{ flex: 1, marginBottom: 8 }}>
                 {/* Nama peserta tes */}
@@ -51,7 +51,7 @@ const Penilaian = () => {
                     fontWeight: "bold",
                   }}
                 >
-                  {pilihPesertaKertosono?.nama}
+                  {pilihPesertaKertosono?.nama_lengkap}
                 </Text>
                 {pilihPesertaKertosono?.jenis_kelamin == "Laki-laki" ?
                   <Text variant="titleSmall">bin {pilihPesertaKertosono?.nama_ayah}</Text> :
@@ -173,8 +173,7 @@ const FormPenilaianAkhlakKertosono = ({
           // Call the API to store the form data
           setLoading(true);
           const storedForm = await storeAkhlakKertosono(
-            formValues.peserta_kertosono_id,
-            formValues.poin,
+            formValues.tes_santri_id,
             formValues.catatan
           );
 
@@ -212,23 +211,6 @@ const FormPenilaianAkhlakKertosono = ({
                 Form Penilaian
               </Text>
             </View>
-
-            <Surface elevation={0} style={styles.inputGroup}>
-              <TextInput
-                label="Poin"
-                value={values.poin}
-                error={!!errors.poin}
-                onChangeText={(text) => {
-                  setFieldValue("poin", text)
-                  setFormValues((prev) => ({ ...prev, poin: text }))
-                }}
-                keyboardType="numeric"
-                mode="outlined"
-              />
-              <HelperText type="error" visible={errors.poin && touched.poin}>
-                {errors.poin}
-              </HelperText>
-            </Surface>
 
             <Surface elevation={0} style={styles.inputGroup}>
               <TextInput

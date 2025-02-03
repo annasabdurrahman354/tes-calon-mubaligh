@@ -184,7 +184,7 @@ const ParticipantCard = ({
               borderRadius: theme.roundness * 3,
               alignSelf: "center",
             }}
-            source={{uri: "https://ppwb.kita-kita.online/registrasi-tes/images/" + peserta.foto_smartcard}}
+            source={{uri: peserta.foto_smartcard}}
           />
           <Chip
             icon="account-group"
@@ -210,7 +210,7 @@ const ParticipantCard = ({
         >
           <View style={{ flexDirection: "row", gap: 4, alignItems: "center" }}>
             <Text variant="titleMedium" style={{ fontWeight: "bold" }}>
-              {peserta.nama}
+              {peserta.nama_lengkap}
             </Text>
             {peserta.jumlah_penyimakan >
               0 && (

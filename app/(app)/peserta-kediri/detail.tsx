@@ -27,7 +27,7 @@ const Detail = () => {
             <View style={styles.header}>
               <Avatar.Image
                 size={72}
-                source={{uri: "https://ppwb.kita-kita.online/registrasi-tes/images/" + pilihPesertaKediri?.foto_smartcard}}
+                source={{uri: pilihPesertaKediri?.foto_smartcard}}
               />
               <View style={{ flex: 1, marginBottom: 8 }}>
                 {/* Nama peserta tes */}

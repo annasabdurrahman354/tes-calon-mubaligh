@@ -47,7 +47,7 @@ export function useKediri() {
     };
     
     const storeAkademikKediri = async (
-      peserta_kediri_id: string,
+      tes_santri_id: string,
       nilai_makna: string,
       nilai_keterangan: string,
       nilai_penjelasan: string,
@@ -56,7 +56,7 @@ export function useKediri() {
     ): Promise<AkademikKediriForm | null | any> => {
       try {
         const response = await api.post<AkademikKediriForm>('akademik-kediri', {
-          peserta_kediri_id,
+          tes_santri_id,
           nilai_makna,
           nilai_keterangan,
           nilai_penjelasan,
@@ -71,13 +71,13 @@ export function useKediri() {
     };
     
     const storeAkhlakKediri = async (
-      peserta_kediri_id: string,
+      tes_santri_id: string,
       poin: number,
       catatan: string
     ): Promise<AkhlakKediriForm | null | any> => {
       try {
         const response = await api.post<AkhlakKediriForm>('akhlak-kediri', {
-          peserta_kediri_id,
+          tes_santri_id,
           poin,
           catatan,
         });

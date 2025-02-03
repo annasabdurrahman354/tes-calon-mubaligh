@@ -80,11 +80,11 @@ const Penilaian = () => {
   useEffect(() => {
     const updatedFormValues = selectedPesertaKediri.map((peserta) => {
       const existingForm = formValues.find(
-        (form) => form.peserta_kediri_id === peserta.id
+        (form) => form.tes_santri_id === peserta.id
       );
       return (
         existingForm || {
-          peserta_kediri_id: peserta.id,
+          tes_santri_id: peserta.id,
           nilaiMakna: "",
           nilaiKeterangan: "",
           nilaiPenjelasan: "",
@@ -183,7 +183,7 @@ const Penilaian = () => {
                   borderWidth: 4,
                   borderRadius: 1000,
                 }}
-                source={{uri: "https://ppwb.kita-kita.online/registrasi-tes/images/" + peserta.foto_smartcard}}
+                source={{uri: peserta.foto_smartcard}}
               />
               <Text
                 style={{
@@ -220,7 +220,7 @@ const Penilaian = () => {
             <View style={styles.header}>
               <Avatar.Image
                 size={72}
-                source={{uri: "https://ppwb.kita-kita.online/registrasi-tes/images/" + selectedPesertaKediri[activePenilaian].foto_smartcard}}
+                source={{uri: selectedPesertaKediri[activePenilaian].foto_smartcard}}
               />
               <View style={{ flex: 1, marginBottom: 8 }}>
                 {/* Nama peserta tes */}
@@ -457,7 +457,7 @@ const FormPenilaianAkademikKediri = ({
           setLoading(true);
           const formValueToStore = formValues[activePenilaian];
           const storedForm = await storeAkademikKediri(
-            formValueToStore.peserta_kediri_id,
+            formValueToStore.tes_santri_id,
             formValueToStore.nilaiMakna,
             formValueToStore.nilaiKeterangan,
             formValueToStore.nilaiPenjelasan,

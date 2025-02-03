@@ -22,13 +22,13 @@ export type AkademikKediri = {
 }
 
 export type AkhlakKediriForm = {
-  peserta_kediri_id: string;
+  tes_santri_id: string;
   poin: number;
   catatan: string;
 }
 
 export type AkademikKediriForm = {
-  peserta_kediri_id: string;
+  tes_santri_id: string;
   nilai_makna: number;
   nilai_keterangan: number;
   nilai_penjelasan: number;
