@@ -38,9 +38,9 @@ const Detail = () => {
                     fontWeight: "bold",
                   }}
                 >
-                  {pilihPesertaKediri?.nama}
+                  {pilihPesertaKediri?.nama_lengkap}
                 </Text>
-                {pilihPesertaKediri?.jenis_kelamin == "Laki-laki" ?
+                {pilihPesertaKediri?.jenis_kelamin == "L" ?
                   <Text variant="titleSmall">bin {pilihPesertaKediri?.nama_ayah}</Text> :
                   <Text variant="titleSmall">binti {pilihPesertaKediri?.nama_ayah}</Text>
                 }

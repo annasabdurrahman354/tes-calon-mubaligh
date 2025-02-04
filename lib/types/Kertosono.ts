@@ -46,7 +46,7 @@ export type PesertaKertosono = {
   periode_id: string;
   nispn: string;
   nama_lengkap: string;
-  nama_panggilana: string | null;
+  nama_panggilan: string | null;
   jenis_kelamin: string;
   kelompok: string;
   nomor_cocard: number;

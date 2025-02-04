@@ -91,8 +91,8 @@ const Search = () => {
   
     const jenisKelaminOptions = [
       { label: "Laki-laki & Perempuan ", value: "-" },
-      { label: "Laki-laki", value: "Laki-laki" },
-      { label: "Perempuan", value: "Perempuan" },
+      { label: "Laki-laki", value: "L" },
+      { label: "Perempuan", value: "P" },
     ];
   
     const kelompokOptions = [
@@ -247,7 +247,7 @@ const ParticipantCard = ({
         >
           <View style={{ flexDirection: "row", gap: 4, alignItems: "center" }}>
             <Text variant="titleMedium" style={{ fontWeight: "bold" }}>
-              {peserta.nama}
+              {peserta.nama_lengkap}
             </Text>
             {peserta.jumlah_penyimakan >
               0 && (
@@ -263,7 +263,7 @@ const ParticipantCard = ({
               </Text>
             )}
           </View>
-          {peserta.jenis_kelamin == "Laki-laki" ?
+          {peserta.jenis_kelamin == "L" ?
             <Text variant="titleSmall">bin {peserta.nama_ayah}</Text> :
             <Text variant="titleSmall">binti {peserta.nama_ayah}</Text>
           }

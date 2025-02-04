@@ -1,13 +1,14 @@
 import { useAtom } from "jotai";
 import { AkademikKediriForm, AkhlakKediriForm, PesertaKediri } from "../types/Kediri";
 import api, { handleApiError } from "./api";
-import { pilihPesertaKediriAtom, selectedPesertaKediriAtom } from "../atoms/selectedPesertaAtom";
+import {formValuesAtom, pilihPesertaKediriAtom, selectedPesertaKediriAtom} from "../atoms/selectedPesertaAtom";
 import { pesertaKediriAtom } from "../atoms/pesertaAtom";
 
 export function useKediri() {
     const [pesertaKediri, setPesertaKediri] = useAtom(pesertaKediriAtom);
     const [selectedPesertaKediri, setSelectedPesertaKediri] = useAtom(selectedPesertaKediriAtom);
     const [pilihPesertaKediri, setPilihPesertaKediri] = useAtom(pilihPesertaKediriAtom);
+    const [formValues, setFormValues] = useAtom(formValuesAtom);
 
     const getPesertaKediri = async (
       jenis_kelamin?: string,
@@ -24,7 +25,7 @@ export function useKediri() {
           params['filter[kelompok]'] = kelompok;
         }
         if (nama) {
-          params['filter[siswa.nama]'] = nama;
+          params['filter[namaOrCocard]'] = nama;
         }
     
         const response = await api.get('peserta-kediri', { params });
@@ -141,6 +142,6 @@ export function useKediri() {
       return selectedPesertaKediri?.some((item) => item.id === id);
     };
   
-    return { pesertaKediri, getPesertaKediri, getPesertaKediriByNfc, storeAkademikKediri, storeAkhlakKediri, selectedPesertaKediri, addSelectedPesertaKediri, removeSelectedPesertaKediri, clearSelectedPesertaKediri, toggleSelectedPesertaKediri, isSelectedPesertaKediri, pilihPesertaKediri, setPilihPesertaKediri};
+    return { pesertaKediri, getPesertaKediri, getPesertaKediriByNfc, storeAkademikKediri, storeAkhlakKediri, selectedPesertaKediri, addSelectedPesertaKediri, removeSelectedPesertaKediri, clearSelectedPesertaKediri, toggleSelectedPesertaKediri, isSelectedPesertaKediri, pilihPesertaKediri, setPilihPesertaKediri,  formValues, setFormValues};
   }
   

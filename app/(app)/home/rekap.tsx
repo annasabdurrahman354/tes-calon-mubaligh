@@ -135,7 +135,7 @@ const Rekap = () => {
                 backgroundColor: "#3FD13F",
               }}
             >
-               <FontAwesome5 size={24} name={gender == "Laki-laki" ? "male" : "female"} color={theme.colors.onPrimary} />
+               <FontAwesome5 size={24} name={gender == "L" ? "male" : "female"} color={theme.colors.onPrimary} />
             </Shadow>
           
           <Text

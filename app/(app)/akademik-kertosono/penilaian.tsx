@@ -200,7 +200,7 @@ const Penilaian = () => {
                 >
                   {selectedPesertaKertosono[activePenilaian].nama_lengkap}
                 </Text>
-                {selectedPesertaKertosono[activePenilaian].jenis_kelamin == "Laki-laki" ?
+                {selectedPesertaKertosono[activePenilaian].jenis_kelamin == "L" ?
                   <Text variant="titleSmall">bin {selectedPesertaKertosono[activePenilaian].nama_ayah}</Text> :
                   <Text variant="titleSmall">binti {selectedPesertaKertosono[activePenilaian].nama_ayah}</Text>
                 }

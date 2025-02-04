@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Avatar,
@@ -12,7 +12,7 @@ import {
   TextInput,
   useTheme,
 } from "react-native-paper";
-import { Platform, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { Image } from "expo-image";
 import * as Yup from "yup";
 import RNBounceable from "@freakycoder/react-native-bounceable";
@@ -23,76 +23,74 @@ import { useKediri } from "@/lib/services/useKediri";
 import { router } from "expo-router";
 import { useSnackbar } from "@/lib/services/useSnackbar";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
-import {CreditCardIcon} from "react-native-heroicons/outline";
+import {useAuth} from "@/lib/services/useAuth";
+import { getFirstValidWord } from "@/lib/types/Kertosono";
 
 const Penilaian = () => {
   const theme = useTheme();
   const [tab, setTab] = useState("penilaian");
   const [loading, setLoading] = useState(false);
-  const [formValues, setFormValues] = useState([]);
   const [activePenilaian, setActivePenilaian] = useState(0);
-  const [nfcId, setNfcId] = useState("");
-  const [useSmartcard, setUseSmartCard] = useState(false);
-  const [smartCardMessage, setSmartCardMessage] = useState("");
-
-  const inputRef = useRef(null);
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const {user} = useAuth();
 
   const {
     storeAkademikKediri,
     selectedPesertaKediri,
     removeSelectedPesertaKediri,
-    getPesertaKediriByNfc,
-    addSelectedPesertaKediri
+    formValues,
+    setFormValues
   } = useKediri();
 
-  const onGetPesertaKediriByNfc = async (nfc: string) => {
-    setLoading(true);
-    if (nfcId.length != 10) {
-      console.log("Rejecy NFC ID:", nfcId); // Debugging: Log the NFC ID before processing
-      return null
-    }
-    try {
-      const peserta = await getPesertaKediriByNfc(nfc);
+  // Prevent rendering until selectedPesertaKertosono is valid
+  if (!selectedPesertaKediri || selectedPesertaKediri.length === 0) {
+    router.replace("/(app)/akademik-kediri"); // Redirect to home
 
-      console.log(peserta)
+    return null; // Optionally render a loading spinner or blank state
+  }
 
-      if (peserta?.telah_disimak) {
-        setSmartCardMessage(`${peserta.nama} sudah pernah anda simak.`);
-      } else {
-        setSmartCardMessage(`${peserta?.nama} telah ditambahkan.`);
-        addSelectedPesertaKediri(peserta);
-        setNfcId("");
-        inputRef.current?.focus();
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        setSmartCardMessage(error.message);
-      }
-    }
-    setLoading(false);
-    setNfcId(""); // Reset NFC ID
-    inputRef.current?.focus(); // Refocus the input field
-  };
-
-  // Synchronize formValues with selectedPesertaKediri
   useEffect(() => {
+    if (!selectedPesertaKediri || selectedPesertaKediri.length === 0) {
+      router.replace("/(app)/akademik-kediri"); // Redirect to home
+    }
     const updatedFormValues = selectedPesertaKediri.map((peserta) => {
       const existingForm = formValues.find(
-        (form) => form.tes_santri_id === peserta.id
+          (form) => form.tes_santri_id === peserta.id
       );
-      return (
-        existingForm || {
-          tes_santri_id: peserta.id,
-          nilaiMakna: "",
-          nilaiKeterangan: "",
-          nilaiPenjelasan: "",
-          nilaiPemahaman: "",
-          catatan: "",
+
+      if (peserta.telah_disimak) {
+        // Check if the peserta has a matching akademik entry for the guru_id
+        const akademikEntry = peserta.akademik?.find(
+            (akademik) => akademik.guru_id == user?.id
+        );
+
+        if (akademikEntry) {
+          // Pre-fill the form with data from akademikEntry
+          return (
+              existingForm || {
+                tes_santri_id: peserta.id,
+                nilaiMakna: akademikEntry.nilai_makna,
+                nilaiKeterangan: akademikEntry.nilai_keterangan,
+                nilaiPenjelasan: akademikEntry.nilai_penjelasan,
+                nilaiPemahaman: akademikEntry.nilai_pemahaman,
+                catatan: akademikEntry.catatan,
+              }
+          );
         }
+      }
+
+      // Default to existingForm or a blank form for this peserta
+      return (
+          existingForm || {
+            tes_santri_id: peserta.id,
+            nilaiMakna: "",
+            nilaiKeterangan: "",
+            nilaiPenjelasan: "",
+            nilaiPemahaman: "",
+            catatan: "",
+          }
       );
     });
+
     setFormValues(updatedFormValues);
   }, [selectedPesertaKediri]);
 
@@ -106,49 +104,6 @@ const Penilaian = () => {
 
     removeSelectedPesertaKediri(pesertaToRemove);
   };
-
-  // Focus input field when the modal is presented and `useSmartcard` is true
-  useEffect(() => {
-    if (inputRef.current && useSmartcard) {
-      inputRef.current.focus();
-    }
-  }, []);
-
-  useEffect(() => {
-    if (loading) setNfcId("");
-    if (nfcId.length === 10) {
-      console.log("Auto-trigger NFC ID:", nfcId); // Debugging: Log the NFC ID before processing
-      onGetPesertaKediriByNfc(nfcId.trim());
-    }
-  }, [nfcId, onGetPesertaKediriByNfc]);
-  
-  const handleScreenTouch = () => {
-    // Maintain focus on the TextInput even after screen interaction
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  };
-
-  const handlePresentModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.present();
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, []);
-
-  const handleSheetChanges = useCallback((index: number) => {
-    setNfcId("");
-    setSmartCardMessage("");
-    setUseSmartCard((prev) => !prev); // Toggle smart card usage
-    if (inputRef.current) inputRef.current.focus();
-  }, []);
-
-  const snapPoints = useMemo(() => ["30%"], []);
-
-  const renderBackdrop = useCallback(
-    (props) => <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />,
-    []
-  );
 
   return (
     <Surface style={{ flex: 1 }}>
@@ -197,7 +152,7 @@ const Penilaian = () => {
                 }}
                 variant={"bodySmall"}
               >
-                {peserta.nama_panggilan} - {peserta.kelompok}
+                {getFirstValidWord(peserta.nama_lengkap)} - {peserta.kelompok}
                 {peserta.nomor_cocard}
               </Text>
             </View>
@@ -231,9 +186,9 @@ const Penilaian = () => {
                     fontWeight: "bold",
                   }}
                 >
-                  {selectedPesertaKediri[activePenilaian].nama}
+                  {selectedPesertaKediri[activePenilaian].nama_lengkap}
                 </Text>
-                {selectedPesertaKediri[activePenilaian].jenis_kelamin == "Laki-laki" ?
+                {selectedPesertaKediri[activePenilaian].jenis_kelamin == "L" ?
                   <Text variant="titleSmall">bin {selectedPesertaKediri[activePenilaian].nama_ayah}</Text> :
                   <Text variant="titleSmall">binti {selectedPesertaKediri[activePenilaian].nama_ayah}</Text>
                 }
@@ -338,88 +293,6 @@ const Penilaian = () => {
           </Card>
         )}
       </ScrollView>
-      <BottomSheetModal
-          ref={bottomSheetModalRef}
-          backdropComponent={renderBackdrop}
-          index={0}
-          snapPoints={snapPoints}
-          onChange={handleSheetChanges}
-          style={{ marginHorizontal: 32, flex:1 }}
-        >
-          <BottomSheetView
-            style={{
-              flex: 1,
-              paddingHorizontal: 16,
-              paddingBottom: 16,
-              alignItems: "center",
-            }}
-          >
-            <TouchableOpacity
-              activeOpacity={1}
-              onPress={handleScreenTouch}
-              style={{ flex: 1, width: '100%', height: '100%' }}
-            >
-              <View
-                style={{
-                  alignSelf: "center",
-                  borderRadius: 32,
-                  borderWidth: 1,
-                  borderStyle: "dashed",
-                  marginHorizontal: 16,
-                  padding: 16,
-                  borderColor: theme.colors.outline,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  gap: 16,
-                  width: '100%',
-                  height: '100%',
-                }}
-              >
-                <View
-                  style={{
-                    backgroundColor: theme.colors.primary,
-                    padding: 12,
-                    borderRadius: 16,
-                  }}
-                >
-                  {loading ? (
-                    <ActivityIndicator size={40} color={theme.colors.onPrimary} />
-                  ) : (
-                    <CreditCardIcon
-                      color={theme.colors.onPrimary}
-                      size={40}
-                    />
-                  )}
-                </View>
-                <TextInput
-                  ref={inputRef}
-                  mode="flat"
-                  underlineColor="transparent"
-                  style={
-                    Platform.OS == 'web' ? {borderTopLeftRadius:20, borderTopRightRadius:20}:
-                    {position: 'absolute', bottom:0, right: 0, width: 0, height: 0, borderTopLeftRadius:20, borderTopRightRadius:20}
-                  }
-                  onChangeText={setNfcId} // Save changes to state
-                  onSubmitEditing={undefined} // Trigger alert on submission
-                  submitBehavior={"submit"}
-                  placeholder="NFC ID"
-                  showSoftInputOnFocus={false}
-                  keyboardType="numeric"
-                  caretHidden={true} // Hide cursor
-                  value={nfcId} // Controlled component tied to state
-                />
-                <Text
-                  variant="titleMedium"
-                  style={{ color: theme.colors.primary, textAlign: "center" }}
-                >
-                  {loading
-                    ? "Verifikasi Identitas Smartcard"
-                    : smartCardMessage || "Tap Smartcard untuk Menambahkan"}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          </BottomSheetView>
-        </BottomSheetModal>
     </Surface>
   );
 };

@@ -3,9 +3,9 @@ export type AkhlakKediri = {
   guru_id: string;
   guru_nama: string;
   guru_foto: string;
-  catatan: string;
-  poin: number;
-  created_at: string | null;
+  catatan: string | null;
+  poin: number | null;
+  created_at: string;
 }
 
 export type AkademikKediri = {
@@ -18,7 +18,7 @@ export type AkademikKediri = {
   nilai_penjelasan: number;
   nilai_pemahaman: number;
   catatan: string | null;
-  created_at: string | null;
+  created_at: string;
 }
 
 export type AkhlakKediriForm = {
@@ -40,30 +40,32 @@ export type PesertaKediri = {
   id: string;
   periode_id: string;
   siswa_id: string;
-  nama: string;
+  nama_lengkap: string;
   nama_panggilan: string;
   jenis_kelamin: string;
   kelompok: string;
   nomor_cocard: number;
-  nis: string;
+  nis: string | null;
   nik: string;
-  nfc: string;
-  asal_pondok_id: number;
-  asal_pondok_nama: string ;
-  asal_daerah_id: number;
+  rfid: string | null;
+  kota_nama: string | null;
+  asal_pondok_nama: string;
   asal_daerah_nama: string;
   pendidikan: string;
+  status_mondok: string;
+  keahlian: string;
+  hobi: string;
   umur: number;
   nama_ayah: string;
   riwayat_tes: number;
   jumlah_penyimakan: number;
-  total_poin_akhlak: number;
-  avg_nilai_makna: number;
-  avg_nilai_keterangan: number;
-  avg_nilai_penjelasan: number;
-  avg_nilai_pemahaman: number;
-  avg_nilai: number;
-  hasil_sistem: number;
+  total_poin_akhlak: number | null;
+  avg_nilai_makna: number | null;
+  avg_nilai_keterangan: number | null;
+  avg_nilai_penjelasan: number | null;
+  avg_nilai_pemahaman: number | null;
+  avg_nilai: number | null;
+  hasil_sistem: string;
   telah_disimak: boolean;
   foto_smartcard: string;
   akhlak: AkhlakKediri[];

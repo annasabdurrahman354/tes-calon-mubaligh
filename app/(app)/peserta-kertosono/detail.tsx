@@ -40,7 +40,7 @@ const Detail = () => {
                 >
                   {pilihPesertaKertosono?.nama_lengkap}
                 </Text>
-                {pilihPesertaKertosono?.jenis_kelamin == "Laki-laki" ?
+                {pilihPesertaKertosono?.jenis_kelamin == "L" ?
                   <Text variant="titleSmall">bin {pilihPesertaKertosono?.nama_ayah}</Text> :
                   <Text variant="titleSmall">binti {pilihPesertaKertosono?.nama_ayah}</Text>
                 }
