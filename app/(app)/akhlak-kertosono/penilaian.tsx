@@ -149,7 +149,6 @@ const Penilaian = () => {
 
 const validationSchema = Yup.object().shape({
   catatan: Yup.string().required("Catatan akhlak harus diisi."),
-  poin: Yup.string().required("Poin akhlak harus diisi.").max(100, "Poin tidak boleh lebih dari 100.").min(0, "Poin tidak boleh kurang dari 0."),
 })
 
 const FormPenilaianAkhlakKertosono = ({
@@ -229,7 +228,7 @@ const FormPenilaianAkhlakKertosono = ({
                 {errors.catatan}
               </HelperText>
             </Surface>
-           
+                       
           </Card.Content>
           {loading ? (
             <Card.Actions style={{ margin: 16 }}>
