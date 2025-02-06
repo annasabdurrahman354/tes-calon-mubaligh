@@ -15,6 +15,10 @@ export default function Root({ children }: { children: React.ReactNode }) {
           name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no"
         />
+        <title>Tes Calon Mubaligh</title>
+
+        <link rel="manifest" href="/manifest.json" />
+
 
         {/* 
           Disable body scrolling on web. This makes ScrollView components work closer to how they do on native. 
