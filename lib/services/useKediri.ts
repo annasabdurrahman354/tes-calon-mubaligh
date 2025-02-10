@@ -35,6 +35,34 @@ export function useKediri() {
         handleApiError(err);
       }
     };
+
+    const getAuthSimak = async (
+        jenis_kelamin?: string,
+        kelompok?: string,
+        nama?: string
+    ): Promise<PesertaKediri[] | null | any> => {
+        try {
+            const params: Record<string, string> = {};
+
+            if (jenis_kelamin && jenis_kelamin !== '-') {
+                params['filter[siswa.jenis_kelamin]'] = jenis_kelamin;
+            }
+            if (kelompok && kelompok !== '-') {
+                params['filter[kelompok]'] = kelompok;
+            }
+            if (nama) {
+                params['filter[namaOrCocard]'] = nama;
+            }
+
+            params['filter'] = 'anda-simak';
+
+            const response = await api.get('peserta-kediri', { params });
+            setPesertaKediri(response.data);
+            return response.data;
+        } catch (err) {
+            handleApiError(err);
+        }
+    };
     
     const getPesertaKediriByNfc = async (nfc: string): Promise<PesertaKediri | null | any> => {
       try {
@@ -142,6 +170,6 @@ export function useKediri() {
       return selectedPesertaKediri?.some((item) => item.id === id);
     };
   
-    return { pesertaKediri, getPesertaKediri, getPesertaKediriByNfc, storeAkademikKediri, storeAkhlakKediri, selectedPesertaKediri, addSelectedPesertaKediri, removeSelectedPesertaKediri, clearSelectedPesertaKediri, toggleSelectedPesertaKediri, isSelectedPesertaKediri, pilihPesertaKediri, setPilihPesertaKediri,  formValues, setFormValues};
+    return { pesertaKediri, getPesertaKediri, getAuthSimak, getPesertaKediriByNfc, storeAkademikKediri, storeAkhlakKediri, selectedPesertaKediri, addSelectedPesertaKediri, removeSelectedPesertaKediri, clearSelectedPesertaKediri, toggleSelectedPesertaKediri, isSelectedPesertaKediri, pilihPesertaKediri, setPilihPesertaKediri,  formValues, setFormValues};
   }
   

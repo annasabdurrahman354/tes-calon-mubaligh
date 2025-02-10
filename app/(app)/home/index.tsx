@@ -49,7 +49,6 @@ const TabsHome = () => {
             padding: 16,
             width: "100%",
             gap: 16,
-            marginBottom: 48
           }}
         >
           <View
@@ -242,6 +241,14 @@ const TabsHome = () => {
                     iconShadowColor="#E5FCD9"
                     iconBackgroundColor="#3FD13F"
                     onClick={() => router.push("/(app)/akhlak-kediri")}
+                  />
+                  <MainMenu
+                    title="Daftar Anda Simak"
+                    cardBackgroundColor={theme.colors.background}
+                    icon={HeroIcons.UserGroupIcon}
+                    iconShadowColor="#E5FCD9"
+                    iconBackgroundColor="#3FD13F"
+                    onClick={() => router.push("/(app)/peserta-kediri/auth-simak")}
                   />
                 </>
               }           

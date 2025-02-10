@@ -12,6 +12,7 @@ const Layout = () => (
       }}
     >
       <Stack.Screen name="index" options={{ title: "Peserta Kediri" }} />
+      <Stack.Screen name="auth-simak" options={{ title: "Peserta Anda Simak" }} />
       <Stack.Screen name="detail" options={{ title: "Detail Peserta Kediri" }} />
     </Stack>
   </GestureHandlerRootView>

@@ -255,8 +255,7 @@ const ParticipantCard = ({
           ? theme.colors.elevation.level3
           : theme.colors.background,
       }}
-      onPress={!telahDisimak ? onPress : () => {}}
-      disabled={telahDisimak}
+      onPress={onPress}
     >
       <Card.Content
         style={{
